@@ -112,8 +112,6 @@ impl CustomTag {
     }
 }
 
-
-
 /*
 * getting file contents
  */

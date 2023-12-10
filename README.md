@@ -1,10 +1,51 @@
 # sticker 🦙
-simple html compiler.
-create your components, add it as in the example index.html, using the sintax:
+Simple html compiler for component syntax. No shadow dom generation nor particular type of rendering. Simple static html generation.
+
+## BASIC USAGE 
+
+component.html
+
+```html
+<div>
+  hello world from sticker 🦙
+</div>
+```
+
+index.html
+
 ```html
 <sticker>
   #use component.html as component;
 </sticker>
 <component></component>
 ```
-and run the command cargo run when you're done.
+
+run the following command
+
+```bash
+cargo run
+```
+
+enter the path of the file you want to compile and the filename of the result
+
+## USING ATTRIBUTES
+
+component.html
+
+```html
+<div>
+  hello world from sticker {{name}}
+</div>
+```
+
+index.html
+
+```html
+<sticker>
+  #use component.html as component;
+</sticker>
+<component name="🦙"></component>
+```
+
+
+
