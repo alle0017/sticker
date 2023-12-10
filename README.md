@@ -1,4 +1,4 @@
-# sticker
+# sticker 🦙
 simple html compiler.
 create your components, add it as in the example index.html, using the sintax:
 ```html
