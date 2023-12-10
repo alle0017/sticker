@@ -1,0 +1,13 @@
+[package]
+name = "sticker"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+colored = "2.0.4"
+html5ever = "0.26.0"
+kuchiki = "0.8.1"
+markup5ever = "0.10.1"
+markup5ever_rcdom = "0.2.0"
