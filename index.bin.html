@@ -2,8 +2,7 @@
             </head><body>
       
       
-            <br></br>
-<div id="nav">
+            <div id="nav">
       <style>
             li {
                   float: left;
@@ -33,11 +32,69 @@
             </li>
       </ul>
 </div>
-            <div id="footer">
+<br></br>
+            <div style="position: absolute; top: 10%; height: 50%; width: 80%; overflow-y: scroll; margin: 10%;">
+                  <h1 id="sticker_🦙">sticker 🦙</h1>
+
+<p>Simple html compiler for component syntax. No shadow dom generation nor particular type of rendering. Simple static html generation.</p>
+
+<h2 id="basic_usage">BASIC USAGE</h2>
+
+<p>component.html</p>
+
+<pre><code class="language-html">&lt;div&gt;
+  hello world from sticker 🦙
+&lt;/div&gt;</code></pre>
+
+<p>index.html</p>
+
+<pre><code class="language-html">&lt;sticker&gt;
+  #use component.html as component;
+&lt;/sticker&gt;
+&lt;component&gt;&lt;/component&gt;</code></pre>
+
+<p>run the following command</p>
+
+<pre><code class="language-bash">cargo run mypage.html mypagecompiled.html</code></pre>
+
+<p>or</p>
+
+<pre><code class="language-bash">cargo run</code></pre>
+
+<p>enter the path of the file you want to compile and the filename of the result</p>
+
+<h2 id="using_attributes">USING ATTRIBUTES</h2>
+
+<p>component.html</p>
+
+<pre><code class="language-html">&lt;div&gt;
+  hello world from sticker {{name}}
+&lt;/div&gt;</code></pre>
+
+<p>index.html</p>
+
+<pre><code class="language-html">&lt;sticker&gt;
+  #use component.html as component;
+&lt;/sticker&gt;
+&lt;component name="🦙"&gt;&lt;/component&gt;</code></pre>
+
+<p>you can also use .md files as components as if they where normal html components</p>
+
+            </div>
+            <style>
+      #footer {
+            position: absolute;
+            bottom: 0;
+            background-color: black;
+            width: 100%;
+            height: 20%;
+      }
+</style>
+<div id="footer">
       <ul>
             <li>
-                  <a href="mailto:andrea@vincyevivi.com">
-                        andrea@vincyevivi.com
+                  <a href="mailto:mymail@gmail.com">
+                        mymail@gmail.com
                   </a>
             </li>
             <li>
@@ -47,14 +104,5 @@
             </li>
       </ul>
 </div>
-<style>
-      #footer {
-            position: absolute;
-            bottom: 0;
-            background-color: black;
-            width: 100%;
-            height: 20%;
-      }
-</style>
       
 </body></html>

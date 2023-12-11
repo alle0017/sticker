@@ -2,6 +2,7 @@ extern crate kuchiki;
 extern crate colored;
 extern crate html5ever;
 extern crate markup5ever;
+extern crate markdown;
 
 use kuchiki::NodeRef;
 use kuchiki::parse_html;
@@ -16,10 +17,8 @@ use markup5ever::namespace_url;
 
 use std::fs::File;
 use std::io::prelude::*;
+use std::env;
 
-// the name of tag used to define custom tags
-const TAG_NAME: &str = "sticker";
-const COMPONENT_DECLARATION: &str = "#use";
 #[derive(Default, Debug)]
 struct Attributes {
     name: String,
@@ -33,7 +32,7 @@ impl Attributes {
         };
     }
 }
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 struct CustomTag {
     name: String,
     path: String,
@@ -49,7 +48,6 @@ impl CustomTag {
     }
     fn attach_html(&mut self, code: &String){
         let html = code.clone();
-        println!("attached html {}", html.cyan());
         self.file_text = html;
     }
     fn init_tag_from_string(&mut self, declaration: &String) {
@@ -99,7 +97,24 @@ impl CustomTag {
         }
         name
     }
-    fn add_attributes(&self, attributes: &Vec<Attributes>) -> String {
+    fn get_code_from_file(&mut self){
+        
+        let mut text = match Dom::get_file(&self.path){
+            Ok(text)=> text,
+            Err(e) => {
+                println!("{}", e.to_string().red());
+                "".to_string()
+            },
+        };
+        if !self.path.find(".md").is_none() {
+            text = markdown::to_html(text.as_str());
+        }
+        self.attach_html(&text)
+    }
+    fn add_attributes<'a>(&'a mut self, attributes: &Vec<Attributes>) -> String {
+        if self.file_text.len() <= 0 {
+            self.get_code_from_file();
+        }
         let mut html = self.file_text.clone();
         for attribute in attributes {
             let mut attribute_name = attribute.name.clone();
@@ -110,117 +125,136 @@ impl CustomTag {
         }
         html
     }
-}
-
-/*
-* getting file contents
- */
-fn get_html_file( name: &String ) -> Result<String, std::io::Error> {
-    println!("{}", "reading file...".blue());
-    println!("name of file: {}", name.truecolor(255,153,0));
-    let mut file = File::open(name)?;
-    let mut content = String::new();
-    file.read_to_string(&mut content)?;
-
-    println!("{}","file read successfully".green());
-
-    Ok(content)
-}
-
-fn create_html_dom( file_path: String ) -> NodeRef {
-    let file_data = match get_html_file(&file_path){
-        Ok(data) => data,
-        Err(e) => panic!("problem reading file {}. error{}",file_path.red(), e.to_string().red()),
-    };
-    let parser = parse_html().one(file_data);
-
-    parser
-}
-
-
-fn get_custom_tags( node: &NodeRef, tag_name: &str ) -> Vec<CustomTag> {
-    println!("{}","get custom tags...".blue());
-    let mut tags: Vec<CustomTag> = Vec::new();
-    let declaration_tag = node.select_first(tag_name).unwrap();
-    let text = declaration_tag.text_contents();
-    let declarations = get_components_declarations(&text);
-
-    for declaration in declarations.iter() {
-        let mut tag = CustomTag::new();
-        println!("declaration string: {}",declaration.truecolor(255,153,0));
-        tag.init_tag_from_string(declaration);
-        tags.push(tag);
+    fn as_node(&mut self,  attributes: &Vec<Attributes>) -> Option<NodeRef> {
+        let snippet = self.add_attributes(attributes);
+        let element_dom = kuchiki::parse_fragment(
+            QualName::new(None, ns!(), "div".into()), 
+            vec![] 
+        ).one(snippet);
+        let element = match element_dom.select_first("html"){
+            Ok(element) => element,
+            Err(_) => {
+                println!("{}","Error while parsing the tag...".red());
+                return None;
+            }
+        };
+        Some(element.as_node().clone())
     }
-    declaration_tag.as_node().detach();
-
-    tags
 }
+struct Dom {
+    dom: NodeRef,
+    tags: Vec<CustomTag>,
+}
+impl Dom {
+    const TAG_NAME: &str = "sticker";
+    const COMPONENT_DECLARATION: &str = "#use";
 
-fn get_components_declarations( text_node: &String ) -> Vec<String> {
-    let text = text_node.clone();
-    let mut declarations: Vec<String> = Vec::new();
-    let possible_declarations: Vec<&str> = text.split(';').collect();
-    for declaration in possible_declarations {
-        if !declaration.find(COMPONENT_DECLARATION).is_none() {
-            declarations.push(declaration.to_string());
+    fn new(file_path: &String) -> Self {
+        return Dom {
+            dom: Dom::create_html_dom(file_path),
+            tags: vec![],
         }
     }
-        
-    declarations
-}
-fn substitute_custom_tags( dom: &NodeRef, tags: Vec<CustomTag> ){
-    
-    for mut prototype_tag in tags {
-        match get_html_file(&prototype_tag.path){
-            Ok(text)=> prototype_tag.attach_html(&text),
-            Err(e) => {
-                println!("{}", e.to_string().red());
-                return;
-            },
+    fn create_html_dom( file_path: &String ) -> NodeRef {
+        let file_data = match Dom::get_file(file_path){
+            Ok(data) => data,
+            Err(e) => panic!("problem reading file {}. error{}",file_path.red(), e.to_string().red()),
         };
-        println!("working on {}...", prototype_tag.name.blue());
-        for tag in dom.select(prototype_tag.name.as_str() ).unwrap() {
+        let parser = parse_html().one(file_data);
+    
+        parser
+    }
+    fn get_file( name: &String ) -> Result<String, std::io::Error> {
+        println!("{}", "reading file...".blue());
+        println!("name of file: {}", name.truecolor(255,153,0));
+        let mut file = File::open(name)?;
+        let mut content = String::new();
+        file.read_to_string(&mut content)?;
+    
+        println!("{}","file read successfully".green());
+    
+        Ok(content)
+    }    
+    fn create_file(&self, new_file_name: &str){
+        println!("{}","creating file...".blue());
+        let mut bin = match File::create(new_file_name) {
+            Ok(file) => file,
+            Err(e) => panic!("error while creating file (path: {}) error {}", new_file_name.red(), e.to_string().red())
+        };
+        match bin.write_all(self.dom.to_string().as_bytes()){
+            Err(e) => panic!("error while writing on file (path: {}) error {}", new_file_name.red(), e.to_string().red().bold()),
+            _=>println!("{}","file written successfully".green().bold())
+        };
+    }
+}
 
-            let attributes = tag.attributes.borrow();
-            let mut values: Vec<Attributes> = Vec::new();
-            for (a_name, a_value) in attributes.map.iter() {
-                let mut attrib = Attributes::new();
-                attrib.name = a_name.local.to_string();
-                attrib.value = a_value.value.to_string();
-                values.push( attrib );
+trait CustomTagParser {
+    fn get_components_declarations( text_node: &String ) -> Vec<String>;
+    fn get_custom_tags(&mut self, declaration_tag_name: &str );
+    fn substitute_custom_tags(&self);
+    fn parse(&mut self);
+}
+impl CustomTagParser for Dom {
+    fn get_components_declarations( text_node: &String ) -> Vec<String> {
+        let text = text_node.clone();
+        let mut declarations: Vec<String> = Vec::new();
+        let possible_declarations: Vec<&str> = text.split(';').collect();
+        for declaration in possible_declarations {
+            if !declaration.find(Dom::COMPONENT_DECLARATION).is_none() {
+                declarations.push(declaration.to_string());
             }
-            let snippet = prototype_tag.add_attributes(&values);
-            let element_dom = kuchiki::parse_fragment(
-                QualName::new(None, ns!(), "div".into()), 
-                vec![] 
-            ).one(snippet);
-            println!("{} {}", "extracted tags".yellow(),element_dom.to_string().yellow());
-            let element = match element_dom.select_first("html"){
-                Ok(element) => element,
-                Err(_) => {
-                    println!("{}","Error while parsing the tag...".red());
+        }
+            
+        declarations
+    }
+    fn get_custom_tags(&mut self, declaration_tag_name: &str ) {
+        println!("{}","get custom tags...".blue());
+        let declaration_tag = self.dom.select_first(declaration_tag_name).unwrap();
+        let text = declaration_tag.text_contents();
+        let declarations = Dom::get_components_declarations(&text);
+
+        for declaration in declarations.iter() {
+            let mut tag = CustomTag::new();
+            println!("declaration string: {}",declaration.truecolor(255,153,0));
+            tag.init_tag_from_string(declaration);
+            self.tags.push(tag);
+        }
+        declaration_tag.as_node().detach();
+
+    }
+    fn substitute_custom_tags(&self) {
+        for prototype_tag_ref in self.tags.as_slice() {
+            let mut prototype_tag = prototype_tag_ref.clone();
+            println!("working on {}...", prototype_tag.name.blue());
+            for tag in self.dom.select(prototype_tag.name.as_str() ).unwrap() {
+    
+                let attributes = tag.attributes.borrow();
+                let mut values: Vec<Attributes> = Vec::new();
+                for (a_name, a_value) in attributes.map.iter() {
+                    let mut attrib = Attributes::new();
+                    attrib.name = a_name.local.to_string();
+                    attrib.value = a_value.value.to_string();
+                    values.push( attrib );
+                }
+                let element = prototype_tag.as_node(&values);
+                if element.is_none() {
                     continue;
                 }
-            };
-            for child in element.as_node().children() {
-                tag.as_node().insert_after(child);
+                for child in element.unwrap().children() {
+                    tag.as_node().insert_before(child);
+                }
+                tag.as_node().detach();
+                println!("{}", self.dom.to_string().bright_cyan());
             }
-            tag.as_node().detach();
-            println!("{}", dom.to_string().bright_cyan());
         }
+        
+    }
+    fn parse<'a>(&'a mut self){
+        self.get_custom_tags( Dom::TAG_NAME );
+        self.substitute_custom_tags();
     }
 }
-fn create_file( file_name: &String, dom: &NodeRef ){
-    println!("{}","creating file...".blue());
-    let mut bin = match File::create(file_name) {
-        Ok(file) => file,
-        Err(e) => panic!("error while creating file (path: {}) error {}", file_name.red(), e.to_string().red())
-    };
-    match bin.write_all(dom.to_string().as_bytes()){
-        Err(e) => panic!("error while writing on file (path: {}) error {}", file_name.red(), e.to_string().red()),
-        _=>println!("{}","file written successfully".green())
-    };
-}
+
 fn get_file_path() -> String {
     let mut file_path: String = String::new();
     let current_dir = match std::env::current_dir() {
@@ -241,13 +275,42 @@ fn get_file_path() -> String {
 }
 fn main() {
 
-    let mut file_path: String = get_file_path();
-
+    let mut file_path: String;
+    let args: Vec<String> = env::args().collect();
+    if args.len() > 1 {
+        file_path = args[1].to_string();
+        let current_dir = match std::env::current_dir() {
+            Ok(dir) => dir,
+            Err(e) => {
+                println!("{}", e.to_string().red());
+                panic!();
+            },
+        };
+        file_path.insert(0, '/');
+        file_path.insert_str(0, current_dir.to_str().unwrap());
+    } else {
+        file_path = get_file_path();
+    }
+    
     println!("file path acquired, {}", file_path.green());
-    let dom = create_html_dom(file_path);
-    let tags = get_custom_tags(&dom, TAG_NAME );
-    substitute_custom_tags(&dom, tags);
+    //let dom = create_html_dom(file_path);
+    let mut dom: Dom = Dom::new(&file_path);
+    dom.parse();
 
-    file_path = get_file_path();
-    create_file(&file_path, &dom);
+    if args.len() > 2 {
+        file_path = args[2].to_string();
+        let current_dir = match std::env::current_dir() {
+            Ok(dir) => dir,
+            Err(e) => {
+                println!("{}", e.to_string().red());
+                panic!();
+            },
+        };
+        file_path.insert(0, '/');
+        file_path.insert_str(0, current_dir.to_str().unwrap());
+    } else {
+        file_path = get_file_path();
+    }
+
+    dom.create_file(&file_path);
 }

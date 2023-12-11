@@ -21,6 +21,11 @@ index.html
 ```
 
 run the following command
+```bash
+cargo run mypage.html mypagecompiled.html
+```
+
+or
 
 ```bash
 cargo run
@@ -47,5 +52,5 @@ index.html
 <component name="🦙"></component>
 ```
 
-
+you can also use .md files as components as if they where normal html components
 
