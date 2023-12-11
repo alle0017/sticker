@@ -33,7 +33,7 @@
       </ul>
 </div>
 <br></br>
-            <div style="position: absolute; top: 10%; height: 50%; width: 80%; overflow-y: scroll; margin: 10%;">
+            <div style="position: absolute; top: 10%; height: 68%; width: 80%; overflow-y: scroll; overflow-x: hidden; padding: 2%; ">
                   <h1 id="sticker_🦙">sticker 🦙</h1>
 
 <p>Simple html compiler for component syntax. No shadow dom generation nor particular type of rendering. Simple static html generation.</p>
@@ -78,7 +78,41 @@
 &lt;/sticker&gt;
 &lt;component name="🦙"&gt;&lt;/component&gt;</code></pre>
 
-<p>you can also use .md files as components as if they where normal html components</p>
+<p>you can also use .md files as components as if they where normal html components.</p>
+
+<h2 id="use_dynamic_components">USE DYNAMIC COMPONENTS</h2>
+
+<p>you can also import sticker.js in your project to use dynamic components creation. you have only to specify in the sticker tag that, the specific component, needs to be dynamic. then, you can use the following functions to create and modify components</p>
+
+<pre><code class="language-`html"> &lt;div&gt;
+  hello {{name}}
+&lt;/div&gt;</code></pre>
+
+<pre><code class="language-`html">&lt;sticker&gt;
+  #use hello.html as hello dynamic;
+&lt;/sticker&gt;</code></pre>
+
+<pre><code class="language-`javascript"> import { Sticker } from ’./sticker.js’;
+let component = Sticker.appendCustomElement(’hello’);
+component.setAttribute(’name’, ’world’);</code></pre>
+
+<p>the function implemented are:</p>
+
+<pre><code class="language-`typescript  "> /**
+ * create custom component and append it. node is document.body by default
+ */
+Sticker.appendCustomElement(name: string, node: HTMLElement): HTMLElement;
+/**
+* set the attribute name of the component with the attribute value
+*/
+component.setAttribute(name: string, value: string);
+/**
+* create elements of type name, and assign to each one the attribute *specified in each attribute.
+*/
+Sticker.for(name: string,attributes: Attribute[]): (node: HTMLElement)=&gt;void;
+
+//where first string is attribute name, the second is the attribute value
+type Attribute = Record&lt;string,string&gt;;</code></pre>
 
             </div>
             <style>
