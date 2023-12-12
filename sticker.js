@@ -75,7 +75,7 @@ export class Sticker {
        * @param {string} name 
        * @param {HTMLElement} node 
        */
-      static appendCustomElement(name, node = document.body){
+      static append(name, node = document.body){
             const elem = this.#createComponent(name);
             node.appendChild(elem);
             return elem;
@@ -83,7 +83,7 @@ export class Sticker {
       /**
        * @param {string} name component name
        * @param {Record<string,string>[]} attributes components attributes
-       * @returns {(HTMLElement)=>void} function that create element for each element of the attributes array
+       * @returns {(node: HTMLElement)=>void} function that create element for each element of the attributes array
        */
       static for(name,attributes){
             const create = (attribs, node)=>{
@@ -98,6 +98,33 @@ export class Sticker {
                   for( let attribs of attributes ){
                         create(attribs, node);
                   }
+            }
+      }
+      /**
+       * 
+       * @param {string} name name of the component
+       * @param { boolean } condition condition to check
+       * @param {HTMLElement} node
+       * if condition is true, append custom element
+       */
+      static if( name, condition, node = document.body ){
+            if( condition ){
+                  this.append( name, node );
+            }
+      }
+      /**
+       * 
+       * @param {string} ifName name of the component appended if condition is true
+       * @param {string} elseName name of the component appended if condition is false
+       * @param { boolean } condition condition to check
+       * @param {HTMLElement} node
+       * if condition is true, append custom first specified custom element, else append second custom element
+       */
+      static ifElse( ifName, elseName, condition, node = document.body ){
+            if( condition ){
+                  this.append( ifName, node );
+            }else{
+                  this.append( elseName, node );
             }
       }
 }

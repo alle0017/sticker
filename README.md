@@ -70,7 +70,7 @@ you can also use .md files as components as if they where normal html components
 
  ```javascript
  import { Sticker } from './sticker.js';
-let component = Sticker.appendCustomElement('hello');
+let component = Sticker.append('hello');
 component.setAttribute('name', 'world');
  ```
 the function implemented are:
@@ -78,11 +78,19 @@ the function implemented are:
  /**
  * create custom component and append it. node is document.body by default
  */
-Sticker.appendCustomElement(name: string, node: HTMLElement): HTMLElement;
+Sticker.append(name: string, node: HTMLElement): HTMLElement;
 /**
 * set the attribute name of the component with the attribute value
 */
-component.setAttribute(name: string, value: string);
+component.setAttribute(name: string, value: string): void;
+/**
+* if condition is true, append custom element
+*/
+Sticker.if( name: string, condition: boolean, node: HTMLElement): void;
+/**
+* if condition is true, append custom first specified custom element, else append second custom element
+*/
+Sticker.ifElse( ifName: string, elseName: string, condition: boolean, node: HTMLElement ): void;
 /**
 * create elements of type name, and assign to each one the attribute *specified in each attribute.
 */

@@ -8,7 +8,7 @@ function main(){
             const textBox = document.getElementById('new-todo');
             if( !textBox ) 
                   return;
-            const elem = Sticker.appendCustomElement( 'todo', document.getElementById('todo-list') );
+            const elem = Sticker.append( 'todo', document.getElementById('todo-list') );
             elem.setAttribute('todo', textBox.value);
             textBox.value = '';
       })     
