@@ -161,9 +161,9 @@ pub struct CustomTag {
     is_dynamic: bool,
 }
 impl CustomTag {
-      const TAG_IMPORT: &str = "use";
+      const TAG_IMPORT: &str = "#use ";
       const DYNAMIC_USAGE: &str = "dynamic";
-      const ALIAS_INDICATOR: &str = "as";
+      const ALIAS_INDICATOR: &str = " as ";
 
       fn new() -> CustomTag {
             return CustomTag {
@@ -197,7 +197,7 @@ impl CustomTag {
             let index = declaration.find(CustomTag::TAG_IMPORT);
             let mut path = String::new();
             if !index.is_none() {
-                  let string = declaration.get(index.unwrap() + 3..).unwrap();
+                  let string = declaration.get(index.unwrap() + CustomTag::TAG_IMPORT.len()..).unwrap();
 
                   for c in string.chars() {
                   if ( c == ' ' || c == ';' || c == '\n' ) && path.len() > 0 {
@@ -214,7 +214,7 @@ impl CustomTag {
             let index = declaration.find(CustomTag::ALIAS_INDICATOR);
             let mut name = String::new();
             if !index.is_none() {
-                  let string = declaration.get(index.unwrap() + 2..).unwrap();
+                  let string = declaration.get(index.unwrap() + CustomTag::ALIAS_INDICATOR.len()..).unwrap();
                   for c in string.chars() {
                   if c != ' ' {
                         name.push(c);
