@@ -62,7 +62,7 @@ impl Dom {
                   Ok(file) => file,
                   Err(e) => panic!("error while creating file (path: {}) error {}", new_file_name.red(), e.to_string().red())
             };
-            self.dom.append( kuchiki::NodeRef::new_comment("file generated automatically") );
+            self.dom.prepend( kuchiki::NodeRef::new_comment("file generated automatically") );
             match bin.write_all(self.dom.to_string().as_bytes()){
                   Err(e) => panic!("error while writing on file (path: {}) error {}", new_file_name.red(), e.to_string().red().bold()),
                   _=>println!("{}","file written successfully".green().bold())
@@ -266,7 +266,7 @@ impl CustomTag {
       fn as_node(&mut self,  attributes: &Vec<Attributes>) -> Option<NodeRef> {
             let snippet = self.add_attributes(attributes);
             let element_dom = kuchiki::parse_fragment(
-                  QualName::new(None, ns!(), "div".into()), 
+                  QualName::new(None, ns!(html), "div".into()), 
                   vec![] 
             ).one(snippet);
             let element = match element_dom.select_first("html"){
