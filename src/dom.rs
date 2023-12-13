@@ -6,7 +6,8 @@ extern crate markdown;
 
 
 use kuchiki::NodeRef;
-use kuchiki::parse_html;
+use kuchiki::ParseOpts;
+use kuchiki::parse_html_with_options;
 use kuchiki::traits::TendrilSink;
 
 
@@ -38,7 +39,9 @@ impl Dom {
                   Ok(data) => data,
                   Err(e) => panic!("problem reading file {}. error{}",file_path.red(), e.to_string().red()),
             };
-            let parser = parse_html().one(file_data);
+            let mut opt = ParseOpts::default();
+            opt.tree_builder.scripting_enabled = true;
+            let parser = parse_html_with_options(opt).one(file_data);
 
             parser
       }
@@ -59,6 +62,7 @@ impl Dom {
                   Ok(file) => file,
                   Err(e) => panic!("error while creating file (path: {}) error {}", new_file_name.red(), e.to_string().red())
             };
+            self.dom.append( kuchiki::NodeRef::new_comment("file generated automatically") );
             match bin.write_all(self.dom.to_string().as_bytes()){
                   Err(e) => panic!("error while writing on file (path: {}) error {}", new_file_name.red(), e.to_string().red().bold()),
                   _=>println!("{}","file written successfully".green().bold())
