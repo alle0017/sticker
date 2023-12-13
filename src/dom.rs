@@ -6,8 +6,7 @@ extern crate markdown;
 
 
 use kuchiki::NodeRef;
-use kuchiki::ParseOpts;
-use kuchiki::parse_html_with_options;
+use kuchiki::parse_html;
 use kuchiki::traits::TendrilSink;
 
 
@@ -39,9 +38,7 @@ impl Dom {
                   Ok(data) => data,
                   Err(e) => panic!("problem reading file {}. error{}",file_path.red(), e.to_string().red()),
             };
-            let mut opt = ParseOpts::default();
-            opt.tree_builder.scripting_enabled = true;
-            let parser = parse_html_with_options(opt).one(file_data);
+            let parser = parse_html().one(file_data);
 
             parser
       }
