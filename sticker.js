@@ -1,4 +1,4 @@
-export class Sticker {
+export default class Sticker {
       static #customElements = new Map();
       /**
        * @hideconstructor
@@ -102,10 +102,10 @@ export class Sticker {
       }
       /**
        * 
+       * if condition is true, append custom element
        * @param {string} name name of the component
        * @param { boolean } condition condition to check
        * @param {HTMLElement} node
-       * if condition is true, append custom element
        */
       static if( name, condition, node = document.body ){
             if( condition ){
@@ -114,11 +114,11 @@ export class Sticker {
       }
       /**
        * 
+       * if condition is true, append custom first specified custom element, else append second custom element
        * @param {string} ifName name of the component appended if condition is true
        * @param {string} elseName name of the component appended if condition is false
        * @param { boolean } condition condition to check
        * @param {HTMLElement} node
-       * if condition is true, append custom first specified custom element, else append second custom element
        */
       static ifElse( ifName, elseName, condition, node = document.body ){
             if( condition ){
@@ -126,5 +126,96 @@ export class Sticker {
             }else{
                   this.append( elseName, node );
             }
+      }
+}
+
+export class SRouter {
+      /**
+       * @type HTMLDivElement
+       */
+      static #app;
+      static #routes = {};
+
+      /**
+       * @hideconstructor
+       */
+      constructor(){};
+      
+      static create(){
+            this.#app = document.createElement( 'div' );
+            if( !this.#app )
+                  throw "cannot create the app router";
+      }
+      /**
+       * 
+       * @param {Record<string,string>} routes contains all routes of the app. The object has keys that are the name of the route and the values are the actual components used to represent the page
+       * @example 
+      project structure
+      -home.html
+      -about.html
+      -main.html
+      
+      in main.html
+      ```
+      <sticker>
+      #use home.html as home dynamic;
+      #use about.html as about dynamic;
+      </sticker>
+      ```
+      ...
+      in js
+      ...
+
+      ```javascript
+      const routes = {
+            '/home' : 'home',
+            '/about' : 'about'
+      };
+      SRouter.map( routes );
+      ```
+       */
+      static map( routes ){
+            if( typeof routes !== 'object' )
+                  throw `cannot use routes because are not of type Record<string,string>`;
+            for( let [k,v] of Object.entries(routes) ){
+                  if( typeof v !== 'string' || k !== 'string' ){
+                        console.warn(`route ${k} not added because it or the component name are not of type string`);
+                        continue;
+                  }
+                  this.#routes[k] = v;
+            }
+      }
+      /**
+       * add a route to the routes registry. if routes already exists, it will be overwritten.
+       * @param {string} route name
+       * @param {string} componentName saved in component registry as dynamic component.
+       */
+      static add( route, componentName ){
+            if( typeof route === 'string' || componentName !== 'string' ){
+                  console.warn(`route ${route} not added because it or the component name are not of type string`);
+                  return;
+            }
+            this.#routes[route] = componentName;
+      }
+      /**
+       * delete given route
+       * @param {string} route 
+       */
+      static delete( route ) {
+            if( typeof route !== 'string' || !( route in this.#routes ) )
+                  return;
+            delete this.#routes[ route ];
+      }
+      /**
+       * go to the specified route
+       * @param {string} route 
+       */
+      static goto( route ){
+            if( typeof route !== 'string' || !( route in this.#routes ) ){
+                  console.error( `Invalid route. route ${route} does not exist` )
+                  return;
+            }
+            this.#app.innerHTML = '';
+            Sticker.append( this.#routes[ route ], this.#app );
       }
 }
