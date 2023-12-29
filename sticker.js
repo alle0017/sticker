@@ -1,9 +1,12 @@
 export default class Sticker {
+
       static #customElements = new Map();
+
       /**
        * @hideconstructor
        */
       constructor(){};
+
       static #defineComponent(name){
             const template = document.getElementById(name);
             if( !template ){
@@ -134,7 +137,16 @@ export class SRouter {
        * @type HTMLDivElement
        */
       static #app;
+      /**
+      * @type Record<string,string>
+       */
       static #routes = {};
+
+      static #enterCallbacks = {};
+
+      static #leaveCallbacks = {};
+
+      static #currentPage = '';
 
       /**
        * @hideconstructor
@@ -178,7 +190,7 @@ export class SRouter {
             if( typeof routes !== 'object' )
                   throw `cannot use routes because are not of type Record<string,string>`;
             for( let [k,v] of Object.entries(routes) ){
-                  if( typeof v !== 'string' || k !== 'string' ){
+                  if( typeof v !== 'string' || typeof k !== 'string' ){
                         console.warn(`route ${k} not added because it or the component name are not of type string`);
                         continue;
                   }
@@ -191,7 +203,7 @@ export class SRouter {
        * @param {string} componentName saved in component registry as dynamic component.
        */
       static add( route, componentName ){
-            if( typeof route === 'string' || componentName !== 'string' ){
+            if( typeof route !== 'string' || typeof componentName !== 'string' ){
                   console.warn(`route ${route} not added because it or the component name are not of type string`);
                   return;
             }
@@ -215,7 +227,31 @@ export class SRouter {
                   console.error( `Invalid route. route ${route} does not exist` )
                   return;
             }
+
+            if( this.#currentPage in this.#leaveCallbacks )
+                  this.#leaveCallbacks[this.#currentPage]();
+
             this.#app.innerHTML = '';
             Sticker.append( this.#routes[ route ], this.#app );
+
+            this.#currentPage = route;
+            if( route in this.#enterCallbacks )
+                  this.#enterCallbacks[route]();
+      }
+
+      static onPageEnter( route, callback ){
+            if( typeof route !== 'string' || !( route in this.#routes ) || typeof callback !== 'function' ){
+                  console.warn(`route ${route} does not exist or callback is not a function`);
+                  return;
+            }
+            this.#enterCallbacks[route] = callback;
+      }
+      
+      static onPageLeave( route, callback ){
+            if( typeof route !== 'string' || !( route in this.#routes ) || typeof callback !== 'function' ){
+                  console.warn(`route ${route} does not exist or callback is not a function`);
+                  return;
+            }
+            this.#leaveCallbacks[route] = callback;
       }
 }
