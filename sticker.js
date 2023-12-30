@@ -152,20 +152,28 @@ export class SRouter {
        * @hideconstructor
        */
       constructor(){};
-      
-      static create(){
+
+      /** 
+      * creates the router
+      * @param {HTMLElement} root where the routes will be displayed. default is document body
+      */
+      static create( root = document.body ){
             this.#app = document.createElement( 'div' );
             if( !this.#app )
                   throw "cannot create the app router";
+            root.append( this.#app );
       }
+
       /**
        * 
        * @param {Record<string,string>} routes contains all routes of the app. The object has keys that are the name of the route and the values are the actual components used to represent the page
        * @example 
-      project structure
-      -home.html
-      -about.html
-      -main.html
+      project structure\
+      -home.html\
+      -about.html\
+      -main.html\
+      -script.js\
+      -sticker.js
       
       in main.html
       ```
@@ -173,12 +181,14 @@ export class SRouter {
       #use home.html as home dynamic;
       #use about.html as about dynamic;
       </sticker>
+      <script src="script.js" type="module"></script>
       ```
       ...
-      in js
+      in script.js
       ...
 
       ```javascript
+      import { SRouter } from './sticker.js';
       const routes = {
             '/home' : 'home',
             '/about' : 'about'
@@ -246,7 +256,7 @@ export class SRouter {
             }
             this.#enterCallbacks[route] = callback;
       }
-      
+
       static onPageLeave( route, callback ){
             if( typeof route !== 'string' || !( route in this.#routes ) || typeof callback !== 'function' ){
                   console.warn(`route ${route} does not exist or callback is not a function`);
