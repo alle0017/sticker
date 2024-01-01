@@ -1,5 +1,5 @@
 mod cli;
-
-fn main() {
-    cli::get_command()
+#[tokio::main] 
+async fn main() {
+    cli::get_command().await;
 }

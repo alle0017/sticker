@@ -95,7 +95,7 @@ fn print_command_list(){
       println!("{} {}", "command".magenta(), "args".green());
       println!("sticker {} {}", BUILD_COMMAND.magenta(), " [file_to_compile] [compiled_result_file_name]".bold().green());
 }
-pub fn get_command(){
+pub async fn get_command(){
       let args: Vec<String> = env::args().collect();
       if args.len() <= 1 {
             println!("no arguments found. run {} to see full command list", "sticker".blue() );
@@ -104,7 +104,7 @@ pub fn get_command(){
       if args[1] == BUILD_COMMAND.to_string() {
             build_single_file(2);
       } else if args[1] == NEW_PROJECT_COMMAND.to_string() {
-            new_project::create_new_project();
+            new_project::create_new_project().await;
       }else if args[1] == BUILD_FROM_CONFIG.to_string() {
             build_from_config();
       }else {

@@ -22,16 +22,21 @@ index.html
 
 run the following command
 ```bash
-cargo run mypage.html mypagecompiled.html
+sudo mv /target/release/sticker /usr/local/bin
 ```
-
-or
+to have access to the cli and run
 
 ```bash
-cargo run
+sticker
+```
+to see all the commands available
+here are some examples:
+```bash
+sticker build //build the project
+sticker new //create new project
+sticker comp FILE_TO_COMPILE FILE_COMPILED //compile single file
 ```
 
-enter the path of the file you want to compile and the filename of the result
 
 ## USING ATTRIBUTES
 
