@@ -1,12 +1,32 @@
 class CustomElement {
       /**
       * 
+      * if needed, refresh the component
       * @param {string} key the attribute name
       * @param {string} value the attribute value
-      * if needed, refresh the component
       */
       setAttribute(key, value){}
+      /**
+       * it doesn't refresh the component
+       * @param {string} key the attribute name
+       * @param {string} value the attribute value 
+       * @example
+      ```javascript
+      const component = Sticker.append('my-component');
+
+      //doesn't change anything in the page
+      component.setAttributeWithoutRefreshing(key1, value1);
+      //doesn't change anything in the page
+      component.setAttributeWithoutRefreshing(key2, value2);
+
+      //shows the effect of the 2 changes now!!!
+      component.refresh();
+      ```
+       */
       setAttributeWithoutRefreshing(key, value){}
+      /**
+       * @see {@link setAttributeWithoutRefreshing}
+       */
       refresh(){}
       getElementsByClassName(className){}
       getElementById(id){}
@@ -70,7 +90,7 @@ export default class Sticker {
                         return this.#shadow.getElementsByClassName(className);
                   }
                   getElementById(id){
-                        return this.#shadow.getElementsById(id);
+                        return this.#shadow.getElementById(id);
                   }
                   querySelector(selector){
                         return this.#shadow.querySelector(selector);
