@@ -18,12 +18,6 @@ export default class Sticker {
                   #shadow;
                   #wrapper = document.createElement('div');
                   #attributes = new Map();
-                  constructor(attributes = []){
-                        super();
-                        this.#shadow = this.attachShadow({mode: 'open'});
-                        this.#shadow.append(this.#wrapper);
-                        this.#wrapper.innerHTML = this.#text;
-                  }
                   #serialize(){
                         let text = this.#text;
                         for( let [key, value] of this.#attributes.entries() ){
@@ -53,8 +47,22 @@ export default class Sticker {
                   refresh(){
                         this.#serialize();
                   }
+                  connectedCallback(){
+                        this.#shadow = this.attachShadow({mode: 'open'});
+                        this.#shadow.append(this.#wrapper);
+                        this.#wrapper.innerHTML = this.#text;
+                  }
+                  getElementsByClassName(className){
+                        return this.#shadow.getElementsByClassName(className);
+                  }
+                  getElementById(id){
+                        return this.#shadow.getElementsById(id);
+                  }
+                  querySelector(selector){
+                        return this.#shadow.querySelector(selector);
+                  }
             }, { extends: 'div'});
-            const elem = document.createElement('div', {is: `${name}-component`});
+            const elem = document.createElement(`${name}-component`);
             if( !elem ){
                   console.warn(`something went wrong in component ${name} creation`);
                   return;
