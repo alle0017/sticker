@@ -2,10 +2,6 @@
       "compDir": "./src",
       "targets" : [
             {
-                  "i": "po.html",
-                  "o": "po.b.html"
-            },
-            {
                   "i": "index.html",
                   "o": "index.b.html"
             }
