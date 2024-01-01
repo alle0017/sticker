@@ -104,7 +104,7 @@ pub fn get_command(){
       if args[1] == BUILD_COMMAND.to_string() {
             build_single_file(2);
       } else if args[1] == NEW_PROJECT_COMMAND.to_string() {
-            
+            new_project::create_new_project();
       }else if args[1] == BUILD_FROM_CONFIG.to_string() {
             build_from_config();
       }else {
