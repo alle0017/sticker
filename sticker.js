@@ -1,3 +1,17 @@
+class CustomElement {
+      /**
+      * 
+      * @param {string} key the attribute name
+      * @param {string} value the attribute value
+      * if needed, refresh the component
+      */
+      setAttribute(key, value){}
+      setAttributeWithoutRefreshing(key, value){}
+      refresh(){}
+      getElementsByClassName(className){}
+      getElementById(id){}
+      querySelector(selector){}
+}
 export default class Sticker {
 
       static #customElements = new Map();
@@ -13,7 +27,7 @@ export default class Sticker {
                   console.warn(`component ${name} doesn't exist`);
                   return;
             }
-            customElements.define(`${name}-component`, class extends HTMLDivElement {
+            customElements.define(`${name}-component`, class extends HTMLElement {
                   #text = template.innerHTML;
                   #shadow;
                   #wrapper = document.createElement('div');
@@ -73,7 +87,7 @@ export default class Sticker {
       /**
        * 
        * @param {string} name 
-       * @returns {HTMLDivElement} 
+       * @returns {CustomElement} 
        */
       static #createComponent(name){
             if( !this.#customElements.get(name) && !this.#defineComponent(name) ){
@@ -85,6 +99,7 @@ export default class Sticker {
        * 
        * @param {string} name 
        * @param {HTMLElement} node 
+       * @returns {CustomElement}
        */
       static append(name, node = document.body){
             const elem = this.#createComponent(name);
@@ -156,6 +171,12 @@ export class SRouter {
 
       static #currentPage = '';
 
+      static #root;
+
+      static get root(){
+            return this.#root;
+      }
+      static set root(value){}
       /**
        * @hideconstructor
        */
@@ -250,8 +271,8 @@ export class SRouter {
                   this.#leaveCallbacks[this.#currentPage]();
 
             this.#app.innerHTML = '';
-            Sticker.append( this.#routes[ route ], this.#app );
-
+            this.#root = Sticker.append( this.#routes[ route ], this.#app );
+            
             this.#currentPage = route;
             if( route in this.#enterCallbacks )
                   this.#enterCallbacks[route]();
