@@ -1,4 +1,4 @@
-class CustomElement {
+class CustomElement extends HTMLElement {
       /**
       * 
       * if needed, refresh the component
@@ -31,6 +31,22 @@ class CustomElement {
       getElementsByClassName(className){}
       getElementById(id){}
       querySelector(selector){}
+      /**
+       * method called when the element is added to the DOM
+       * @example
+      ```javascript
+      //extend the component
+      Sticker.extend('my-component', {
+            onenter(){
+                  console.log('hello world');
+            }
+      })
+      //create new instance of it
+      Sticker.append('my-component');
+      //in the console you can see 'hello world'
+      ```
+       */
+      onenter(){}
 }
 export default class Sticker {
 
@@ -85,6 +101,9 @@ export default class Sticker {
                         this.#shadow = this.attachShadow({mode: 'open'});
                         this.#shadow.append(this.#wrapper);
                         this.#wrapper.innerHTML = this.#text;
+                        if( this.onenter && typeof this.onenter == 'function' ){
+                              this.onenter();
+                        }
                   }
                   getElementsByClassName(className){
                         return this.#shadow.getElementsByClassName(className);
@@ -171,6 +190,23 @@ export default class Sticker {
                   this.append( ifName, node );
             }else{
                   this.append( elseName, node );
+            }
+      }
+      /**
+       * extends a component with specified methods and properties
+       * @param {string} name of the component to extend
+       * @param {Record<string,any>} object the object that contains methods and properties to add to the object
+       */
+      static extends( name, object ){
+            if( !this.#customElements.has( name ) ){
+                  if( !this.#createComponent( name ) ){
+                        console.error( `Component ${name} does not exist`);
+                        return;
+                  }
+            }
+            const constructor = customElements.get( `${name}-component`);
+            for( let [k,v] of Object.entries( object ) ){
+                  constructor.prototype[k] = v;
             }
       }
 }
