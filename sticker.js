@@ -57,14 +57,15 @@ export default class Sticker {
        */
       constructor(){};
 
-      static #defineComponent(name){
-            const template = document.getElementById(name);
-            if( !template ){
-                  console.warn(`component ${name} doesn't exist`);
-                  return;
-            }
+      /**
+       * 
+       * @param {string} name 
+       * @param {string} component 
+       * @returns {CustomElement | undefined}
+       */
+      static #defineComponent(name, component){
             customElements.define(`${name}-component`, class extends HTMLElement {
-                  #text = template.innerHTML;
+                  #text = component;
                   #shadow;
                   #wrapper = document.createElement('div');
                   #attributes = new Map();
@@ -123,16 +124,33 @@ export default class Sticker {
             this.#customElements.set(name, elem);
             return elem;
       }
+      static #defineComponentFromTemplate(name){
+            const template = document.getElementById(name);
+            if( !template ){
+                  console.warn(`component ${name} doesn't exist`);
+                  return;
+            }
+            return this.#defineComponent(name, template.innerHTML);
+      }
       /**
        * 
        * @param {string} name 
        * @returns {CustomElement} 
        */
       static #createComponent(name){
-            if( !this.#customElements.get(name) && !this.#defineComponent(name) ){
+            if( !this.#customElements.get(name) && !this.#defineComponentFromTemplate(name) ){
                   return;
             }
             return this.#customElements.get(name).cloneNode(true);
+      }
+      /**
+       * create new component that can be used in the page
+       * @param {string} name 
+       * @param {string} template 
+       * @returns {CustomElement | undefined}
+       */
+      static defineCustomElement(name, template){
+            return this.#defineComponent(name, template);
       }
       /**
        * 
