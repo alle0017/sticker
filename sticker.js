@@ -89,6 +89,9 @@ export default class Sticker {
                               this.#serialize();
                         }
                   }
+                  getAttribute(key){
+                        return this.#attributes.get(key);
+                  }
                   setAttributeWithoutRefreshing(key, value){
                         const attrib = this.#attributes.get(key);
                         if( !attrib || attrib != value ){
@@ -135,13 +138,19 @@ export default class Sticker {
       /**
        * 
        * @param {string} name 
-       * @returns {CustomElement} 
+       * @returns {CustomElement | undefined} 
        */
       static #createComponent(name){
             if( !this.#customElements.get(name) && !this.#defineComponentFromTemplate(name) ){
                   return;
             }
             return this.#customElements.get(name).cloneNode(true);
+      }
+      static #setAttributes(elem, attribs){
+            for( const [key,attrib] of Object.entries(attribs) ){
+                  elem.setAttributeWithoutRefreshing(key,attrib);
+            }
+            elem.refresh();
       }
       /**
        * create new component that can be used in the page
@@ -156,7 +165,7 @@ export default class Sticker {
        * 
        * @param {string} name 
        * @param {HTMLElement} node 
-       * @returns {CustomElement}
+       * @returns {CustomElement | undefined}
        */
       static append(name, node = document.body){
             const elem = this.#createComponent(name);
@@ -164,19 +173,31 @@ export default class Sticker {
             return elem;
       }
       /**
+       * 
+       * @param {string} name 
+       * @param {HTMLElement} node 
+       * @param {Record<string,string>} attributes 
+       * @returns {CustomElement | undefined}
+       */
+      static appendWithAttributes(name, attributes, node = document.body){
+
+            const el = this.append(name, node);
+            if( !el )
+                  return;
+            this.#setAttributes(el, attributes);
+            return el;
+      }
+      /**
        * @param {string} name component name
        * @param {Record<string,string>[]} attributes components attributes
        * @returns {(node: HTMLElement)=>void} function that create element for each element of the attributes array
        */
       static for(name,attributes){
-            const create = (attribs, node)=>{
+            const create = ((attribs, node)=>{
                   const elem = this.#createComponent(name);
-                  for( const [key,attrib] of Object.entries(attribs) ){
-                        elem.setAttributeWithoutRefreshing(key,attrib);
-                  }
-                  elem.refresh();
+                  this.#setAttributes(elem, attribs);
                   node.append(elem);
-            }
+            }).bind(this);
             return (node = document.body)=>{
                   for( let attribs of attributes ){
                         create(attribs, node);
