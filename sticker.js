@@ -147,6 +147,8 @@ export default class Sticker {
             return this.#customElements.get(name).cloneNode(true);
       }
       static #setAttributes(elem, attribs){
+            if( typeof attribs !== 'object' || Object.keys(attribs).length == 0 )
+                  return;
             for( const [key,attrib] of Object.entries(attribs) ){
                   elem.setAttributeWithoutRefreshing(key,attrib);
             }
@@ -165,26 +167,19 @@ export default class Sticker {
        * 
        * @param {string} name 
        * @param {HTMLElement} node 
-       * @returns {CustomElement | undefined}
-       */
-      static append(name, node = document.body){
-            const elem = this.#createComponent(name);
-            node.appendChild(elem);
-            return elem;
-      }
-      /**
-       * 
-       * @param {string} name 
-       * @param {HTMLElement} node 
        * @param {Record<string,string>} attributes 
        * @returns {CustomElement | undefined}
        */
-      static appendWithAttributes(name, attributes, node = document.body){
-
-            const el = this.append(name, node);
+      static append(name, attributes = {}, node = document.body){
+            const el = this.#createComponent(name);
             if( !el )
                   return;
-            this.#setAttributes(el, attributes);
+            if( attributes instanceof HTMLElement ){
+                  attributes.appendChild(el);
+            }else{
+                  node.appendChild(el);
+                  this.#setAttributes(el, attributes);
+            }
             return el;
       }
       /**
@@ -254,39 +249,36 @@ export class SRouter {
       /**
        * @type HTMLDivElement
        */
-      static #app;
+      #app;
       /**
       * @type Record<string,string>
        */
-      static #routes = {};
+      #routes = {};
 
-      static #enterCallbacks = {};
+      #enterCallbacks = {};
 
-      static #leaveCallbacks = {};
+      #leaveCallbacks = {};
 
-      static #currentPage = '';
+      #currentPage = '';
 
-      static #root;
+      #root;
 
-      static get root(){
+      get root(){
             return this.#root;
       }
-      static set root(value){}
-      /**
-       * @hideconstructor
-       */
-      constructor(){};
-
+      set root(value){}
       /** 
       * creates the router
       * @param {HTMLElement} root where the routes will be displayed. default is document body
+      * @param {Record<string,string>} routes contains all routes of the app. The object has keys that are the name of the route and the values are the actual components used to represent the page
       */
-      static create( root = document.body ){
+      constructor( routes = {}, root = document.body ){
             this.#app = document.createElement( 'div' );
             if( !this.#app )
                   throw "cannot create the app router";
             root.append( this.#app );
-      }
+            this.map(routes)
+      };
 
       /**
        * 
@@ -317,10 +309,11 @@ export class SRouter {
             '/home' : 'home',
             '/about' : 'about'
       };
-      SRouter.map( routes );
+      const router = new SRouter();
+      router..map( routes );
       ```
        */
-      static map( routes ){
+      map( routes ){
             if( typeof routes !== 'object' )
                   throw `cannot use routes because are not of type Record<string,string>`;
             for( let [k,v] of Object.entries(routes) ){
@@ -336,7 +329,7 @@ export class SRouter {
        * @param {string} route name
        * @param {string} componentName saved in component registry as dynamic component.
        */
-      static add( route, componentName ){
+      add( route, componentName ){
             if( typeof route !== 'string' || typeof componentName !== 'string' ){
                   console.warn(`route ${route} not added because it or the component name are not of type string`);
                   return;
@@ -347,7 +340,7 @@ export class SRouter {
        * delete given route
        * @param {string} route 
        */
-      static delete( route ) {
+      delete( route ) {
             if( typeof route !== 'string' || !( route in this.#routes ) )
                   return;
             delete this.#routes[ route ];
@@ -356,7 +349,7 @@ export class SRouter {
        * go to the specified route
        * @param {string} route 
        */
-      static goto( route ){
+      goto( route, props = {} ){
             if( typeof route !== 'string' || !( route in this.#routes ) ){
                   console.error( `Invalid route. route ${route} does not exist` )
                   return;
@@ -366,14 +359,14 @@ export class SRouter {
                   this.#leaveCallbacks[this.#currentPage]();
 
             this.#app.innerHTML = '';
-            this.#root = Sticker.append( this.#routes[ route ], this.#app );
+            this.#root = Sticker.append( this.#routes[ route ], props, this.#app );
             
             this.#currentPage = route;
             if( route in this.#enterCallbacks )
                   this.#enterCallbacks[route]();
       }
 
-      static onPageEnter( route, callback ){
+      onPageEnter( route, callback ){
             if( typeof route !== 'string' || !( route in this.#routes ) || typeof callback !== 'function' ){
                   console.warn(`route ${route} does not exist or callback is not a function`);
                   return;
@@ -381,7 +374,7 @@ export class SRouter {
             this.#enterCallbacks[route] = callback;
       }
 
-      static onPageLeave( route, callback ){
+      onPageLeave( route, callback ){
             if( typeof route !== 'string' || !( route in this.#routes ) || typeof callback !== 'function' ){
                   console.warn(`route ${route} does not exist or callback is not a function`);
                   return;
