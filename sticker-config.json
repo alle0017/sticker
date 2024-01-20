@@ -1,9 +1,0 @@
-{
-      "compDir": "./src",
-      "targets" : [
-            {
-                  "i": "index.html",
-                  "o": "index.b.html"
-            }
-      ]
-}

@@ -104,7 +104,14 @@ pub async fn get_command(){
       if args[1] == BUILD_COMMAND.to_string() {
             build_single_file(2);
       } else if args[1] == NEW_PROJECT_COMMAND.to_string() {
-            new_project::create_new_project().await;
+            let mut name = String::new();
+            if args.len() <= 2 {
+                  println!("{}", "no name found for new project (default set as new project)".green());
+                  name = "new project".to_string();
+            }else{
+                  name = args[2].to_string();
+            }
+            new_project::create_new_project( name ).await;
       }else if args[1] == BUILD_FROM_CONFIG.to_string() {
             build_from_config();
       }else {

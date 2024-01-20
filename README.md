@@ -1,5 +1,5 @@
 # sticker 🦙
-Simple html compiler for component syntax. No shadow dom generation nor particular type of rendering. Simple static html generation.
+Simple html compiler for component syntax. Simple static html generation. i suggest to use "inline html" on vscode as extension to improve dev experience.
 
 ## BASIC USAGE 
 
@@ -22,6 +22,7 @@ index.html
 
 run the following command
 ```bash
+cargo build --release
 sudo mv /target/release/sticker /usr/local/bin
 ```
 to have access to the cli and run
@@ -33,7 +34,7 @@ to see all the commands available
 here are some examples:
 ```bash
 sticker build //build the project
-sticker new //create new project
+sticker new DIR_NAME//create new project in the new directory named DIR_NAME (DIR_NAME is set to new project as default)
 sticker comp FILE_TO_COMPILE FILE_COMPILED //compile single file
 ```
 
@@ -74,34 +75,118 @@ you can also use .md files as components as if they where normal html components
  ```
 
  ```javascript
- import { Sticker } from './sticker.js';
-let component = Sticker.append('hello');
+ import * as s from './sticker/js/index.js';
+let component = s.append('hello');
 component.setAttribute('name', 'world');
  ```
 the function implemented are:
  ```typescript  
  /**
- * create custom component and append it. node is document.body by default
+ * create custom component and append it. node is document.body by default, Props is a Record<string, any> object that are set as property of the html element created.
  */
-Sticker.append(name: string, node: HTMLElement): HTMLElement;
+s.append(name: string, props: Object, node: HTMLElement): HTMLElement;
+/**
+* create custom component.
+ */
+s.create(name): HTMLElement;
+/**
+* define custom component ALREADY defined with sticker template engine and return function that specifically creates the component created
+P.S.: name must contain '-' character
+ */
+s.define( descriptor: { 
+    name: string, 
+    watch: string[] | undefined, 
+    props: { 
+      onenter: Optional<()=>void>, 
+      onleave: Optional<()=>void>, 
+      [key: string]: any }, 
+    }
+): (props: Record<string, any>, node: HTMLElement): HTMLCustomElement | undefined;
+/**
+* define custom component NOT defined with sticker template engine and return function that specifically creates the component created
+P.S.: name must contain '-' character
+ */
+s.define(descriptor: { 
+  template: string, 
+  name: string, 
+  watch: string[] | undefined, 
+  props: { 
+    onenter: Optional<()=>void>, 
+    onleave: Optional<()=>void>, 
+    [key: string]: any 
+  }, 
+}): (props: Record<string, any>, node: HTMLElement): HTMLCustomElement | undefined;
+
+
+//where first string is attribute name, the second is the attribute value
+type Attribute = Record<string,string>;
+ ```
+## CUSTOM COMPONENTS 
+```typescript
+
 /**
 * set the attribute name of the component with the attribute value
 */
 component.setAttribute(name: string, value: string): void;
 /**
-* if condition is true, append custom element
-*/
-Sticker.if( name: string, condition: boolean, node: HTMLElement): void;
-/**
-* if condition is true, append custom first specified custom element, else append second custom element
-*/
-Sticker.ifElse( ifName: string, elseName: string, condition: boolean, node: HTMLElement ): void;
-/**
-* create elements of type name, and assign to each one the attribute *specified in each attribute.
-*/
-Sticker.for(name: string,attributes: Attribute[]): (node: HTMLElement)=>void;
+* set the array value in template to he new value
+ */
+component.setArray(name: string, array: Array<any>): void;
 
-//where first string is attribute name, the second is the attribute value
-type Attribute = Record<string,string>;
- ```
+// you can also use old methods as component.getElementById
+//equivalent of querySelector
+component.get(selector: string);
+//equivalent of querySelectorAll
+component.getAll(selector: string);
+```
+### FOR SYNTAX
+in the template, in s.define, you can also use for attribute to create templates based on arrays
+```typescript
+s.define({
+  ...,
+  template: /*html*/`
+      <ul for="name of names">
+        <li>
+          {{name}}
+        </li>
+      </ul>
+  `
+  ...
+})
+...
+component.setArray('names', ['John', 'Bob', 'Karl']);
+```
+## ROUTER
+```typescript
+import * as s from './sticker/index.js'
+/**
+* create a new instance of Router and configure the routes with map object as follow: 
+key of the object is the name of the route
+value of the object key is the component name of the route
+@example
+{
+  '/home': 'home-page'
+}
+// '/home' is the name of the route, 'home-page' is the component name created with sticker, used to create the page
+ */
+constructor( map: Record<string,string>, node: HTMLElement = document.body )
+/**
+change the root where the pages are displayed
+ */
+router.setRoot( node: HTMLElement )
+/**
+* change the displayed route and goes to the route named as the parameter
+ */
+router.goto(route: string)
+/**
+create new routes as the constructor does
+ */
+router.map(map: Record<string,string>)
+```
 
+## ui
+
+```typescript
+s.ui.ask(text, placeholder = 'insert here', value = placeholder);
+s.ui.draggable(element)
+```
