@@ -71,12 +71,15 @@ you can also use .md files as components as if they where normal html components
 
  ```html
 <sticker>
-  #use hello.html as hello dynamic;
+  #use hello.html as hello-world dynamic;
 </sticker>
  ```
 
  ```javascript
  import * as s from './sticker/js/index.js';
+s.define({
+  name: 'hello-world'
+})
 let component = s.append('hello-world');
 component.setAttribute('name', 'world');
  ```
