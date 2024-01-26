@@ -23,7 +23,7 @@ index.html
 run the following command
 ```bash
 cargo build --release
-sudo mv /target/release/sticker /usr/local/bin
+sudo mv ./target/release/sticker /usr/local/bin
 ```
 to have access to the cli and run
 
@@ -34,8 +34,9 @@ to see all the commands available
 here are some examples:
 ```bash
 sticker build //build the project
-sticker new DIR_NAME//create new project in the new directory named DIR_NAME (DIR_NAME is set to new project as default)
+sticker new //initialize new sticker project
 sticker comp FILE_TO_COMPILE FILE_COMPILED //compile single file
+sticker update //update existing js core in the current folder
 ```
 
 

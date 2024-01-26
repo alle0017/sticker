@@ -8,6 +8,7 @@ use colored::Colorize;
 use serde_json::from_str;
 use std::{fs::File, io::Read, path::Path};
 
+
 const CONFIG_FILE: &str = "sticker-config.json";
 
 #[derive(Deserialize)]
@@ -15,6 +16,7 @@ pub struct CompileTarget {
       pub i: String,
       pub o: String,
 }
+#[allow(non_snake_case)]
 #[derive(Default,Deserialize)]
 struct CompileOptions {
       targets: Vec<CompileTarget>,
@@ -31,7 +33,7 @@ fn get_config_file_path() -> String {
       };
       current_dir.push('/');
       current_dir.push_str(CONFIG_FILE);
-      println!( "expected file path: {}", current_dir.yellow() );
+      println!( "expected file path: {}", current_dir.blue() );
       current_dir
 }
 

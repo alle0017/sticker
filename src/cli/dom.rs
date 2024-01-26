@@ -24,8 +24,8 @@ pub struct Dom {
       tags: Vec<CustomTag>,
 }
 impl Dom {
-      const TAG_NAME: &str = "sticker";
-      const COMPONENT_DECLARATION: &str = "#use";
+      const TAG_NAME: &'static str = "sticker";
+      const COMPONENT_DECLARATION: &'static str = "#use";
 
       pub fn new(file_path: &String) -> Self {
             return Dom {
@@ -44,7 +44,7 @@ impl Dom {
       }
       pub fn get_file( name: &String ) -> Result<String, std::io::Error> {
             println!("{}", "reading file...".blue());
-            println!("name of file: {}", name.truecolor(255,153,0));
+            println!("name of file: {}", name.blue());
             let mut file = File::open(name)?;
             let mut content = String::new();
             file.read_to_string(&mut content)?;
@@ -94,7 +94,6 @@ impl CustomTagParser for Dom {
 
             for declaration in declarations.iter() {
                   let mut tag = CustomTag::new();
-                  println!("declaration string: {}",declaration.truecolor(255,153,0));
                   tag.init_tag_from_string(declaration);
                   self.tags.push(tag);
             }
@@ -107,7 +106,7 @@ impl CustomTagParser for Dom {
                   if prototype_tag.is_dynamic {
                         match prototype_tag.as_template(){
                               Some(template) => self.dom.select_first("head").unwrap().as_node().append(template),
-                              None => println!("{} {}", prototype_tag.name.red()," component template cannot be created".red())
+                              None => println!("{} {}", prototype_tag.name.red().bold()," component template cannot be created".red())
                         }
 
                   }
@@ -162,9 +161,9 @@ pub struct CustomTag {
     is_dynamic: bool,
 }
 impl CustomTag {
-      const TAG_IMPORT: &str = "#use ";
-      const DYNAMIC_USAGE: &str = "dynamic";
-      const ALIAS_INDICATOR: &str = " as ";
+      const TAG_IMPORT: &'static str = "#use ";
+      const DYNAMIC_USAGE: &'static str = "dynamic";
+      const ALIAS_INDICATOR: &'static str = " as ";
 
       fn new() -> CustomTag {
             return CustomTag {
@@ -207,7 +206,7 @@ impl CustomTag {
                         path.push(c);
                   }
                   }
-                  println!("found path: {}", path.green());
+                  println!("found path: {}", path.blue());
             }
             path
       }
@@ -223,7 +222,7 @@ impl CustomTag {
                         break;
                   } 
                   }
-                  println!("found name: {}", name.green());
+                  println!("found name: {}", name.blue());
             }
             name
       }

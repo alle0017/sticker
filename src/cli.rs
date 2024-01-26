@@ -13,9 +13,10 @@ use colored::Colorize;
 use std::env;
 
 
-const  BUILD_COMMAND: &str = "comp";
+const BUILD_COMMAND: &str = "comp";
 const BUILD_FROM_CONFIG: &str = "build";
 const NEW_PROJECT_COMMAND: &str = "new";
+const UPDATE: &str = "update";
 
 
 /**
@@ -42,12 +43,11 @@ fn get_file_path() -> String {
 fn build_from_config(){
       let targets = config::get_compile_targets();
       for target in targets {
-            println!("{} {}", "working on ".green().bold().on_white(), target.i.green().bold().on_white() );
+            println!("working on {}...", target.i.blue().bold() );
             let mut dom: Dom = Dom::new(&target.i);
             dom.parse();
             dom.create_file(&target.o);
-            println!("{} {} {} {}", "file".green().bold().on_white(), target.i.green().bold().on_white(), "printed in".green().bold().on_white(),  target.o.green().bold().on_white() );
-
+            println!("input file: {} output file: {}", target.i.blue().bold(), target.o.blue().bold() );
       }
 }
 fn build_single_file( base_arg: usize ){
@@ -68,7 +68,7 @@ fn build_single_file( base_arg: usize ){
             file_path = get_file_path();
       }
       
-      println!("file path acquired, {}", file_path.green());
+      println!("file path acquired, {}...", file_path.blue().bold());
       //let dom = create_html_dom(file_path);
       let mut dom: Dom = Dom::new(&file_path);
       dom.parse();
@@ -92,29 +92,29 @@ fn build_single_file( base_arg: usize ){
 }
 
 fn print_command_list(){
-      println!("{} {}", "command".magenta(), "args".green());
-      println!("sticker {} {}", BUILD_COMMAND.magenta(), " [file_to_compile] [compiled_result_file_name]".bold().green());
+      println!("\n{}\n", "\t STICKER CLI ૮꒰ ˶• ༝ •˶꒱ა \t".bold().bright_blue().on_white());
+      println!("sticker {} {}\n", "command".magenta(), "[args]".green());
+      println!("{} {} {}", "sticker".bold(), BUILD_COMMAND.magenta(), " [file_to_compile] [compiled_result_file_name]".bold().green());
+      println!("{} {}", "sticker".bold(), BUILD_FROM_CONFIG.magenta());
+      println!("{} {}", "sticker".bold(), NEW_PROJECT_COMMAND.magenta());
+      println!("{} {}", "sticker".bold(), UPDATE.magenta());
 }
+#[allow(unused_assignments)]
 pub async fn get_command(){
       let args: Vec<String> = env::args().collect();
       if args.len() <= 1 {
-            println!("no arguments found. run {} to see full command list", "sticker".blue() );
+            print_command_list();
             return;
       }
       if args[1] == BUILD_COMMAND.to_string() {
             build_single_file(2);
       } else if args[1] == NEW_PROJECT_COMMAND.to_string() {
-            let mut name = String::new();
-            if args.len() <= 2 {
-                  println!("{}", "no name found for new project (default set as new project)".green());
-                  name = "new project".to_string();
-            }else{
-                  name = args[2].to_string();
-            }
-            new_project::create_new_project( name ).await;
-      }else if args[1] == BUILD_FROM_CONFIG.to_string() {
+            new_project::create_new_project().await;
+      } else if args[1] == BUILD_FROM_CONFIG.to_string() {
             build_from_config();
-      }else {
+      } else if args[1] == UPDATE.to_string() {
+            new_project::update_project().await;
+      } else {
             print_command_list();
       }
 }
