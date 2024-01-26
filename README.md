@@ -225,6 +225,71 @@ router.map(map: Record<string,string>)
 ## ui
 
 ```typescript
-s.ui.ask(text, placeholder = 'insert here', value = placeholder);
+/**
+* create a prompt like form with an input. the promise resolves when the x is pressed (the prompt is closed) or when the form is submitted
+ */
+async s.ui.ask(text, placeholder = 'insert here', value = placeholder);
+/**
+* set an element as draggable
+ */
 s.ui.draggable(element)
+/**
+* create title bar for your components. it is based on apple and windows ones. callback function will trigger when the x button is clicked
+*/ 
+s.ui.titleBar(callback, node = document.body, title = 'window')
+```
+
+## UTILS
+
+a set of utils methods that can be used for various purposes
+
+```typescript
+import * as s from './sticker/index.js';
+enum browser {
+      FIREFOX = 'Firefox',
+      CHROME = 'Chrome',
+      IE = "MSIE", 
+      OPERA = "Opera", 
+      SAFARI = "Safari",
+      WEBKIT = 'AppleWebKit',
+      GECKO = 'Gecko',
+      KHTML = 'KHTML',
+      EDGE = 'Edge',
+      NINTENDO = ' NintendoBrowser',
+      UNKNOWN = 'unknown',
+};
+
+enum os {
+      NINTENDO = 'Nintendo',
+      PLAYSTATION = 'PlayStation',
+      XBOX = 'XBox',
+      ANDROID = 'Android',
+      IPHONE = 'iPhone',
+      WINDOW_PHONE = 'Windows Phone',
+      MAC = 'Mac',
+      WINDOWS = 'Win',
+      UNIX = 'X11',
+      CHROMECAST = 'CrKey',
+      ROKU = 'Roku',
+      LINUX = 'Linux',
+      UNKNOWN = 'unknown',
+};
+//use as follow:
+s.utils.os.NINTENDO
+s.utils.browser.NINTENDO
+
+/**
+ * return the actual os used
+ */
+s.utils.detectOs(): os;
+/**
+ * return the actual browser used
+ */
+s.utils.detectBrowser(): browser;
+/**
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Navigator/userAgentData for more information about compatibility
+ * @returns if device is mobile
+ */
+s.utils.isMobile(): boolean;
+
 ```
