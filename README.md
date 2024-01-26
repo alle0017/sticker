@@ -1,5 +1,9 @@
 # sticker 🦙
-Simple html compiler for component syntax. Simple static html generation. i suggest to use "inline html" on vscode as extension to improve dev experience.
+Simple html template engine for component syntax and web-component library not based on jsx. i suggest to use "inline html" on vscode as extension to improve dev experience.
+
+# WHY STICKER?
+
+Sticker is simple, fast and lightweight library that can be used to access browser-builtin functions to a lower level than other frameworks. More than that, the sticker template engine enable no javascript site creation with more readable source code. Another cool feature of sticker is that is all open source, so you can easily read all the code and use it for whatever you like.
 
 ## BASIC USAGE 
 
@@ -20,7 +24,7 @@ index.html
 <component></component>
 ```
 
-run the following command
+download the repo and run the following command (after installing cargo-cli):
 ```bash
 cargo build --release
 sudo mv ./target/release/sticker /usr/local/bin
@@ -62,8 +66,8 @@ index.html
 you can also use .md files as components as if they where normal html components.
 
 ## USE DYNAMIC COMPONENTS
- you can also import sticker.js in your project to use dynamic components creation. you can use pre-compiled sticker api to use dynamic components in your js code or you can 
- define a component directly in your js, by declaring a template. suggestion: use inline html exension to enable html syntax highlight in your template declaration.
+As mentioned above, sticker is also javascript friendly, so you can create your own components from js, defining them as templates string (as already mentioned, use 'inline html' extension on vs code to enable better dev experience) rather than jsx. You can also reuse your components created by the template engine, simply adding the 'dynamic' keyword in the component declaration. Some examples and prototypes:
+
  ```html
  <div>
   hello {{name}}
