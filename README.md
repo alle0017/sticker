@@ -62,7 +62,8 @@ index.html
 you can also use .md files as components as if they where normal html components.
 
 ## USE DYNAMIC COMPONENTS
- you can also import sticker.js in your project to use dynamic components creation. you have only to specify in the sticker tag that, the specific component, needs to be dynamic. then, you can use the following functions to create and modify components
+ you can also import sticker.js in your project to use dynamic components creation. you can use pre-compiled sticker api to use dynamic components in your js code or you can 
+ define a component directly in your js, by declaring a template. suggestion: use inline html exension to enable html syntax highlight in your template declaration.
  ```html
  <div>
   hello {{name}}
@@ -71,13 +72,16 @@ you can also use .md files as components as if they where normal html components
 
  ```html
 <sticker>
-  #use hello.html as hello dynamic;
+  #use hello.html as hello-world dynamic;
 </sticker>
  ```
 
  ```javascript
  import * as s from './sticker/js/index.js';
-let component = s.append('hello');
+s.define({
+  name: 'hello-world'
+})
+let component = s.append('hello-world');
 component.setAttribute('name', 'world');
  ```
 the function implemented are:
@@ -117,28 +121,61 @@ s.define(descriptor: {
     [key: string]: any 
   }, 
 }): (props: Record<string, any>, node: HTMLElement): HTMLCustomElement | undefined;
-
-
-//where first string is attribute name, the second is the attribute value
-type Attribute = Record<string,string>;
  ```
 ## CUSTOM COMPONENTS 
 ```typescript
 
-/**
-* set the attribute name of the component with the attribute value
-*/
-component.setAttribute(name: string, value: string): void;
-/**
-* set the array value in template to he new value
- */
-component.setArray(name: string, array: Array<any>): void;
-
-// you can also use old methods as component.getElementById
-//equivalent of querySelector
-component.get(selector: string);
-//equivalent of querySelectorAll
-component.getAll(selector: string);
+export class HTMLCustomElement extends HTMLElement {
+      /**
+       * 
+       * @param {string} name array name used in the html template
+       * @param {Array} value 
+       */
+      setArray(name, value){}
+      /**
+      * fired when the element enters the DOM
+       */
+      onenter(){}
+      /**
+      * fired when the element leaves the DOM
+       */
+      onleave(){}
+      /**
+      * @param {string} className
+      * @returns { HTMLCollection } live list of elements
+       */
+      getElementsByClassName(className){}
+      /**
+      * @param {string} id
+      * @returns { HTMLElement } live element
+       */
+      getElementById(id){}
+      /**
+      * @param {string} selector
+      * @returns { HTMLElement } live element
+       */
+      querySelector(selector){}
+      /**
+      * @param {string} selector
+      * @returns { HTMLCollection } live list of elements
+       */
+      querySelectorAll(selector){}
+      /**
+      * @param {string} selector
+      * @returns { HTMLElement } live element
+       */
+      get(selector){}
+      /**
+      * @param {string} selector
+      * @returns { HTMLCollection } live list of elements
+       */
+      getAll(selector){}
+      /**
+      * add new property as watchable property
+      * @param {string} propName
+       */
+      setWatchable(propName) {}
+}
 ```
 ### FOR SYNTAX
 in the template, in s.define, you can also use for attribute to create templates based on arrays
