@@ -252,15 +252,17 @@ import * as s from './sticker/index.js';
 enum browser {
       FIREFOX = 'Firefox',
       CHROME = 'Chrome',
-      IE = "MSIE", 
+      IE = "Trident", 
+      MS_IE = "MSIE",
       OPERA = "Opera", 
       SAFARI = "Safari",
+      IPHONE_SAFARI = "iPhone",
+      IPAD_SAFARI = "iPad",
       WEBKIT = 'AppleWebKit',
       GECKO = 'Gecko',
-      KHTML = 'KHTML',
-      EDGE = 'Edge',
+      MS_EDGE = 'Edge',
+      CHROMIUM_EDGE = 'Edg/',
       NINTENDO = ' NintendoBrowser',
-      UNKNOWN = 'unknown',
 };
 
 enum os {
@@ -269,7 +271,8 @@ enum os {
       XBOX = 'XBox',
       ANDROID = 'Android',
       IPHONE = 'iPhone',
-      WINDOW_PHONE = 'Windows Phone',
+      IPAD = 'iPad',
+      WINDOWS_PHONE = 'Windows Phone',
       MAC = 'Mac',
       WINDOWS = 'Win',
       UNIX = 'X11',
@@ -291,9 +294,18 @@ s.utils.detectOs(): os;
  */
 s.utils.detectBrowser(): browser;
 /**
+* return the browser version
+ */
+s.utils.detectBrowserVersion(): number;
+/**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Navigator/userAgentData for more information about compatibility
  * @returns if device is mobile
  */
 s.utils.isMobile(): boolean;
+/**
+* @returns browser, browserVersion and os
+ */
+s.utils.getUserAgentInfo();
 
 ```
+      
