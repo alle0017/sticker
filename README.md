@@ -1,5 +1,5 @@
 # sticker 🦙
-Simple html template engine for component syntax and web-component library not based on jsx. i suggest to use "inline html" on vscode as extension to improve dev experience.
+Simple html template engine for component syntax and web-component library not based on jsx. I suggest to use "inline html" on vs code as extension, to improve dev experience.
 
 # WHY STICKER?
 
@@ -88,7 +88,23 @@ s.define({
 let component = s.append('hello-world');
 component.setAttribute('name', 'world');
  ```
-the function implemented are:
+ \
+ or using plain js syntax:
+ ```javascript
+import * as s from './sticker/js/index.js';
+s.define({
+  name: 'hello-world'
+  template: /*html*/`
+        <div>
+          hello {{name}}
+        </div>
+  `,
+})
+let component = s.append('hello-world');
+component.setAttribute('name', 'world');
+ ```
+
+the function implemented for components creation/definition are:
  ```typescript  
  /**
  * create custom component and append it. node is document.body by default, Props is a Record<string, any> object that are set as property of the html element created.
@@ -181,7 +197,7 @@ export class HTMLCustomElement extends HTMLElement {
       setWatchable(propName) {}
 }
 ```
-### FOR SYNTAX
+### FOR ATTRIBUTE
 in the template, in s.define, you can also use for attribute to create templates based on arrays
 ```typescript
 s.define({
@@ -196,8 +212,28 @@ s.define({
   ...
 })
 ...
-component.setArray('names', ['John', 'Bob', 'Karl']);
+component.setArray('names', ['🦙','John', 'Bob', 'Karl']);
 ```
+### REF ATTRIBUTE
+if you want to get an html element in your component, you can, similarly to vueJs, add the attribute ref to the element, than you can refer to it directly in the code as follow:
+
+```typescript
+s.define({
+  ...,
+  template: /*html*/`
+      <ul ref="myList">
+        <li>
+          {{name}}
+        </li>
+      </ul>
+  `
+  ...
+})
+...
+component.refs.myList
+```
+P.S.: this syntax doesn't support already the for loops.
+
 ## ROUTER
 ```typescript
 import * as s from './sticker/index.js'
@@ -245,7 +281,7 @@ s.ui.titleBar(callback, node = document.body, title = 'window')
 
 ## UTILS
 
-a set of utils methods that can be used for various purposes
+a set of utils methods that can be used for various purposes. In current state, the utils are methods for browser sniffing.
 
 ```typescript
 import * as s from './sticker/index.js';
