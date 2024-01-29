@@ -3,6 +3,7 @@ extern crate colored;
 mod dom;
 mod config;
 mod new_project;
+mod data;
 
 use dom::Dom;
 use dom::CustomTagParser;
@@ -18,6 +19,7 @@ const BUILD_FROM_CONFIG: &str = "build";
 const NEW_PROJECT_COMMAND: &str = "new";
 const UPDATE: &str = "update";
 
+const VERSION: &'static str = "v 0.1.0";
 
 /**
  * ask for input the relative file path to the i/o file
@@ -45,6 +47,8 @@ fn build_from_config(){
       for target in targets {
             println!("working on {}...", target.i.blue().bold() );
             let mut dom: Dom = Dom::new(&target.i);
+            data::get_data_from_file(&mut dom.dom);
+
             dom.parse();
             dom.create_file(&target.o);
             println!("input file: {} output file: {}", target.i.blue().bold(), target.o.blue().bold() );
@@ -71,6 +75,7 @@ fn build_single_file( base_arg: usize ){
       println!("file path acquired, {}...", file_path.blue().bold());
       //let dom = create_html_dom(file_path);
       let mut dom: Dom = Dom::new(&file_path);
+      data::get_data_from_file(&mut dom.dom);
       dom.parse();
 
       if args.len() > base_arg + 1 {
@@ -92,8 +97,8 @@ fn build_single_file( base_arg: usize ){
 }
 
 fn print_command_list(){
-      println!("\n{}\n", "\t STICKER CLI ૮꒰ ˶• ༝ •˶꒱ა \t".bold().bright_blue().on_white());
-      println!("sticker {} {}\n", "command".magenta(), "[args]".green());
+      println!( "\n{} {}\n", "\t STICKER CLI ૮꒰ ˶• ༝ •˶꒱ა ".bold().bright_blue().on_white(), VERSION );
+      println!("   sticker {} {}\n", "command".magenta(), "[args]".green());
       println!("{} {} {}", "sticker".bold(), BUILD_COMMAND.magenta(), " [file_to_compile] [compiled_result_file_name]".bold().green());
       println!("{} {}", "sticker".bold(), BUILD_FROM_CONFIG.magenta());
       println!("{} {}", "sticker".bold(), NEW_PROJECT_COMMAND.magenta());

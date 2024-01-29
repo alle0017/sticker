@@ -62,8 +62,36 @@ index.html
 </sticker>
 <component name="🦙"></component>
 ```
+## USE MD FILES 
 
-you can also use .md files as components as if they where normal html components.
+you can also use .md files as components as if they where normal html components. it is compiled to html at compile time.
+```html
+<sticker>
+  #use component.md as component;
+</sticker>
+<component name="🦙"></component>
+```
+
+## USE CSV FILE
+\
+you can also use csv files to generate custom html from templates.
+for example, let's say you have a "file.csv" filled with name in the first column and surname in the second column: 
+```html
+<csv doc="file.csv" from="0" to="20" var="name-and-surname">
+    hello name: {{name-and-surname[0]}} surname: {{name-and-surname[1]}}
+</csv>
+```
+the property of the csv tag are:
+- doc: the document used as reference
+- from (optional, default 0): the row-index to use as starting point
+- to (optional, default EOF): the row-index to use as ending point
+- var (optional, default row): the name used as template
+\
+#### ADVERTISEMENT
+
+1) you cannot use the csv file via js, it is compiled and removed at compile time
+2) you cannot use tags like table, because the parser will automatically correct it.
+
 
 ## USE DYNAMIC COMPONENTS
 As mentioned above, sticker is also javascript friendly, so you can create your own components from js, defining them as templates string (as already mentioned, use 'inline html' extension on vs code to enable better dev experience) rather than jsx. You can also reuse your components created by the template engine, simply adding the 'dynamic' keyword in the component declaration. Some examples and prototypes:

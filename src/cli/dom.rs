@@ -4,7 +4,6 @@ extern crate html5ever;
 extern crate markup5ever;
 extern crate markdown;
 
-
 use kuchiki::NodeRef;
 use kuchiki::parse_html;
 use kuchiki::traits::TendrilSink;
@@ -20,7 +19,7 @@ use std::fs::File;
 use std::io::prelude::*;
 
 pub struct Dom {
-      dom: NodeRef,
+      pub dom: NodeRef,
       tags: Vec<CustomTag>,
 }
 impl Dom {
@@ -80,7 +79,7 @@ impl CustomTagParser for Dom {
             let possible_declarations: Vec<&str> = text.split(';').collect();
             for declaration in possible_declarations {
                   if !declaration.find(Dom::COMPONENT_DECLARATION).is_none() {
-                  declarations.push(declaration.to_string());
+                        declarations.push(declaration.to_string());
                   }
             }
                   
