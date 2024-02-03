@@ -5,6 +5,19 @@ Simple html template engine for component syntax and web-component library not b
 
 Sticker is simple, fast and lightweight library that can be used to access browser-builtin functions to a lower level than other frameworks. More than that, the sticker template engine enable no javascript site creation with more readable source code. Another cool feature of sticker is that is all open source, so you can easily read all the code and use it for whatever you like.
 
+# INDEX
+- [basic usage](#basic-usage)
+- [attributes](#using-attributes)
+- [md files](#use-md-files)
+- [csv files](#use-csv-file)
+- [dynamic components](#use-dynamic-components)
+- [custom components](#custom-components)
+- [for attribute](#for-attribute)
+- [ref attribute](#ref-attribute)
+- [ui](#ui)
+- [utils](#utils)
+- [threads](#thread)
+
 ## BASIC USAGE 
 
 component.html
@@ -170,6 +183,8 @@ s.define(descriptor: {
   }, 
 }): (props: Record<string, any>, node: HTMLElement): HTMLCustomElement | undefined;
  ```
+
+
 ## CUSTOM COMPONENTS 
 ```typescript
 
@@ -285,6 +300,10 @@ router.setRoot( node: HTMLElement )
  */
 router.goto(route: string)
 /**
+* go to the last visited page before the current one
+ */
+router.back()
+/**
 create new routes as the constructor does
  */
 router.map(map: Record<string,string>)
@@ -372,4 +391,61 @@ s.utils.isMobile(): boolean;
 s.utils.getUserAgentInfo();
 
 ```
-      
+
+## THREAD
+
+thread provides some utility methods for working with threads in javascript. The threads created with the s.Thread class are not visible to the end user (you will never get an instance of worker) but is handled internally.
+
+```typescript
+/**
+* create a new thread that will be handled by the s.Thread class
+ */
+s.Thread.spawn(id: string, code: string | URL)
+
+/**
+* true if isn't the main thread
+ */
+s.Thread.isChildThread()
+
+/**
+* listen for the specified message. the callback will get data sended with post or expose as parameter
+ */
+s.Thread.listen( message: string, callback: Function, id?: string )
+
+/**
+* wait for message to be received.
+* the messages sended and received will be processed when the message is received.
+* available only for one message at time.
+*/
+s.Thread.wait(message: string, id?: string)
+
+/**
+* expose an object to the thread with the given id or to the main thread if the id is omitted. use listen method to capture the message from the thread
+ */
+s.Thread.post( message: string, data: any, id?: string )
+
+/**
+* share with the specified thread the transferable
+*/
+s.Thread.expose( message: string, transferable: Record<string,Transferable>, id?: string )
+
+/**
+* log a message from child thread or main thread
+ */
+s.Thread.log( message: any )
+
+/**
+* log an error from child thread or main thread
+ */
+s.Thread.error( message: any )
+
+/**
+* kill the current thread or the child thread with the specified id 
+*/
+s.Thread.kill( id: string )
+
+/**
+* return promise resolved when the child thread end with the function kill
+ */
+await s.Thread.join(id: string)
+```
