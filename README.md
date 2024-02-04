@@ -145,7 +145,7 @@ let component = s.append('hello-world');
 component.setAttribute('name', 'world');
  ```
 
-the function implemented for components creation/definition are:
+the functions implemented for components creation/definition are:
  ```typescript  
  /**
  * create custom component and append it. node is document.body by default, Props is a Record<string, any> object that are set as property of the html element created.
