@@ -14,6 +14,7 @@ Sticker is simple, fast and lightweight library that can be used to access brows
 - [custom components](#custom-components)
 - [for attribute](#for-attribute)
 - [ref attribute](#ref-attribute)
+- [bind attribute](#bind-attribute)
 - [ui](#ui)
 - [utils](#utils)
 - [threads](#thread)
@@ -144,6 +145,11 @@ s.define({
 let component = s.append('hello-world');
 component.setAttribute('name', 'world');
  ```
+ or, from the current version:
+
+```javascript
+component.name = 'world';
+ ```
 
 the functions implemented for components creation/definition are:
  ```typescript  
@@ -257,6 +263,11 @@ s.define({
 ...
 component.setArray('names', ['🦙','John', 'Bob', 'Karl']);
 ```
+or, from the current implementation
+
+```javascript
+component.names = ['🦙','John', 'Bob', 'Karl'];
+```
 ### REF ATTRIBUTE
 if you want to get an html element in your component, you can, similarly to vueJs, add the attribute ref to the element, than you can refer to it directly in the code as follow:
 
@@ -276,6 +287,39 @@ s.define({
 component.refs.myList
 ```
 P.S.: this syntax doesn't support already the for loops.
+
+## BIND ATTRIBUTE
+if you have already worked on applications, either native apps or web apps, you know the importance of the two way data binding. this can be achieved, in sticker, with the bind property:
+```typescript
+s.define({
+  ...,
+  template: /*html*/`
+      <input type="text" bind="@data = myInput"/>
+  `
+  ...
+})
+```
+\
+then, in your script, you can access the value of the input as follows:
+```typescript
+component.myInput
+```
+\
+Obviously, as the name suggests, the variable is bound to the input tag in two ways, so you can also set the value of the input by assigning the component.myInput property. The property created is reactive, so you can also use it in your html as template, as in the example below:
+```typescript
+s.define({
+      name: 'my-component',
+      template: /*html*/`
+            hello {{input}}
+            <input type="text" bind="@data=input"/>
+      `,
+})
+```
+\
+The bind property supports up to three different directives, that are: 
+ - @data: used to assign a property of the component to the value of the tag property. It's the only required property;
+ - @prop: is the property of the tag that will be bound to the @data property. Default value is 'value';
+ - @event: is the event that will trigger the reload of the @data value. Default event is change. It must be a valid event;
 
 ## ROUTER
 ```typescript
