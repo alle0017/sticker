@@ -15,6 +15,7 @@ Sticker is simple, fast and lightweight library that can be used to access brows
 - [for attribute](#for-attribute)
 - [ref attribute](#ref-attribute)
 - [bind attribute](#bind-attribute)
+- [async components](#async-components)
 - [ui](#ui)
 - [utils](#utils)
 - [threads](#thread)
@@ -209,6 +210,14 @@ export class HTMLCustomElement extends HTMLElement {
       * fired when the element leaves the DOM
        */
       onleave(){}
+      /** 
+      * fired when the element's properties changes
+      */
+      onupdate(){}
+      /**
+      * fired when the element is created, before is parsed by sticker
+       */
+       oninstance(){}
       /**
       * @param {string} className
       * @returns { HTMLCollection } live list of elements
@@ -320,6 +329,30 @@ The bind property supports up to three different directives, that are:
  - @data: used to assign a property of the component to the value of the tag property. It's the only required property;
  - @prop: is the property of the tag that will be bound to the @data property. Default value is 'value';
  - @event: is the event that will trigger the reload of the @data value. Default event is change. It must be a valid event;
+
+## ASYNC COMPONENTS
+When you fetch data from the web, you must consider that the fetch operation may fail. The fallback attribute was created for this purpose:
+```javascript
+define({
+      name: 'async-component',
+      template: /*html*/`
+            <div id="async" for="new of news">
+                <div>
+                  {{new}}
+                </div>
+            </div>
+            <div fallback="async">Ops!</div>
+      `,
+      props: {
+            async onenter(){
+                  this.news = await AnyAsyncMethod();
+            }
+      }
+      
+})
+```
+\ 
+If onenter method is recognized as async method and if there are any tags that have the fallback property, then the component will reactively display the component, based on the result of the promise. If the promise is rejected, the fallback tag will be displayed, otherwise will be ignored.
 
 ## ROUTER
 ```typescript
