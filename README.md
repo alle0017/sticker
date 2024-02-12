@@ -12,6 +12,7 @@ Sticker is simple, fast and lightweight library that can be used to access brows
 - [csv files](#use-csv-file)
 - [dynamic components](#use-dynamic-components)
 - [custom components](#custom-components)
+- [custom events](#custom-events)
 - [for attribute](#for-attribute)
 - [ref attribute](#ref-attribute)
 - [bind attribute](#bind-attribute)
@@ -170,8 +171,10 @@ s.define( descriptor: {
     name: string, 
     watch: string[] | undefined, 
     props: { 
-      onenter: Optional<()=>void>, 
-      onleave: Optional<()=>void>, 
+      onenter?: ()=>void, 
+      onleave?: ()=>void,
+      onupdate?: ()=>void,
+      oninstance?: ()=>void,
       [key: string]: any }, 
     }
 ): (props: Record<string, any>, node: HTMLElement): HTMLCustomElement | undefined;
@@ -184,8 +187,10 @@ s.define(descriptor: {
   name: string, 
   watch: string[] | undefined, 
   props: { 
-    onenter: Optional<()=>void>, 
-    onleave: Optional<()=>void>, 
+    onenter?: ()=>void, 
+    onleave?: ()=>void, 
+    onupdate?: ()=>void,
+    oninstance?: ()=>void,
     [key: string]: any 
   }, 
 }): (props: Record<string, any>, node: HTMLElement): HTMLCustomElement | undefined;
@@ -239,9 +244,29 @@ export class HTMLCustomElement extends HTMLElement {
        */
       querySelectorAll(selector){}
       /**
+       * dispatch new event
+       * @param {string} eventName 
+       * @param {Object} args it can be accessed with event.details or, in {@link listen}, with the built-in $e const
+       */
+      emit(eventName, args){}
+      /**
+      * listen for specific events
+      * @param {string} eventName
+      * @param {Function} handler
+      * @returns {Function} a reference to the function used as handler. Must be used with {@link stopListen} or removeEventListener to stop listening for the specified event
+      */
+      listen(eventName, handler){}
+      /**
+       * stop listening for specific event
+       * @param {string} eventName 
+       * @param {Function} handler 
+       */
+      stopListen(eventName, handler){}
+      /**
       * @param {string} selector
       * @returns { HTMLElement } live element
        */
+       
       get(selector){}
       /**
       * @param {string} selector
@@ -255,7 +280,51 @@ export class HTMLCustomElement extends HTMLElement {
       setWatchable(propName) {}
 }
 ```
-### FOR ATTRIBUTE
+## CUSTOM EVENTS
+In the template you can also listen to events, custom or not, with the following syntax:
+```typescript
+s.define({
+      name: 'component-button',
+      template: /*html*/`
+            <button @click="this.count++;">Click me!</button> 
+            {{ count }}
+      `,
+      props: {
+            onenter(){
+                  this.count = 0;
+            }
+      }
+})
+```
+### ::once
+You can also trigger the listener once with the syntax
+```typescript
+s.define({
+      name: 'component-button',
+      template: /*html*/`
+            <button @click::once="this.count++;">Click me!</button> 
+            {{ count }}
+      `,
+      props: {
+            onenter(){
+                  this.count = 0;
+            }
+      }
+})
+```
+### $e built-in
+In each custom event in the template you can also get the event properties with the **$e** variable, as follows:
+
+```typescript
+s.define({
+      name: 'component-button',
+      template: /*html*/`
+            <button @click="console.log($e);">Click me!</button> 
+      `,
+})
+```
+
+## FOR ATTRIBUTE
 in the template, in s.define, you can also use for attribute to create templates based on arrays
 ```typescript
 s.define({
