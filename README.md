@@ -13,6 +13,7 @@ Sticker is simple, fast and lightweight library that can be used to access brows
 - [dynamic components](#use-dynamic-components)
 - [custom components](#custom-components)
 - [custom events](#custom-events)
+- [if attribute](#if-attribute)
 - [for attribute](#for-attribute)
 - [ref attribute](#ref-attribute)
 - [bind attribute](#bind-attribute)
@@ -323,6 +324,22 @@ s.define({
       `,
 })
 ```
+## IF ATTRIBUTE
+Sticker implements also conditional rendering, based on the attributes if and else. 
+```typescript
+s.define({
+  template: /*html*/`
+      <div if="this.lang == 'en'" id="lang">
+        Hello World!
+      </div>
+      <div else="lang">
+        Ciao Mondo!
+      </div>
+  `,
+  watch: ['lang']
+})
+```
+The if attribute accept a condition while the else attribute accept the id of the element that as the if condition. Multiple else are allowed.
 
 ## FOR ATTRIBUTE
 in the template, in s.define, you can also use for attribute to create templates based on arrays
