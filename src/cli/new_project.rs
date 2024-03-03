@@ -6,6 +6,7 @@ use colored::Colorize;
 const REPO_URL: &str = "https://github.com/alle0017/stickerJS";
 const CONFIG_FILE: &str = "/sticker-config.json";
 const LIB_DIR: &str = "/sticker";
+const JS_FILE: &str = "index.js"
 
 fn get_path() -> String {
     let current_dir = match std::env::current_dir() {

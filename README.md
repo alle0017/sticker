@@ -88,6 +88,7 @@ you can also use .md files as components as if they where normal html components
 </sticker>
 <component name="🦙"></component>
 ```
+you can also use md files and strings as template for you dynamic components, using the flag `compileMarkdown` in your define function. 
 
 ## USE CSV FILE
 \
@@ -186,7 +187,8 @@ P.S.: name must contain '-' character
 s.define(descriptor: { 
   template: string, 
   name: string, 
-  watch: string[] | undefined, 
+  watch: string[] | undefined,
+  compileMarkdown: boolean, 
   props: { 
     onenter?: ()=>void, 
     onleave?: ()=>void, 
@@ -195,6 +197,27 @@ s.define(descriptor: {
     [key: string]: any 
   }, 
 }): (props: Record<string, any>, node: HTMLElement): HTMLCustomElement | undefined;
+/**
+* define custom component loading them from external files and return function that specifically creates the component created
+P.S.: name must contain '-' character
+ */
+async s.defineExtern( descriptor: { 
+    name: string, 
+    link: string,
+    compileMarkdown: boolean,
+    watch: string[] | undefined, 
+    props: { 
+      onenter?: ()=>void, 
+      onleave?: ()=>void,
+      onupdate?: ()=>void,
+      oninstance?: ()=>void,
+      [key: string]: any }, 
+    }
+): (props: Record<string, any>, node: HTMLElement): HTMLCustomElement | undefined;
+/**
+* return the content of the loaded file
+ */
+s.load( filename ): Promise<string>
  ```
 
 
