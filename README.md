@@ -1,5 +1,5 @@
 # sticker 🦙
-Simple html template engine for component syntax and web-component library not based on jsx. I suggest to use "inline html" on vs code as extension, to improve dev experience.
+Simple html template engine for component syntax and web-component library called spiderweb not based on jsx. I suggest to use "inline html" on vs code as extension, to improve dev experience.
 
 # WHY STICKER?
 
@@ -108,7 +108,7 @@ the property of the csv tag are:
 
 
 ## USE DYNAMIC COMPONENTS
-As mentioned above, sticker is also javascript friendly, so you can create your own components from js, defining them as templates string (as already mentioned, use 'inline html' extension on vs code to enable better dev experience) rather than jsx. You can also reuse your components created by the template engine, simply adding the 'dynamic' keyword in the component declaration. Some examples and prototypes:
+From the newer version of sticker, sticker js library is replaced with spiderweb.js. Basically, spiderweb allow everything sticker could and much more. In the next months, it will be also updated and new features will be added. spiderweb.js allow you to create your own components from js, defining them as templates string (as already mentioned, use 'inline html' extension on vs code to enable better dev experience) rather than jsx. You can also reuse your components created by the template engine, simply adding the 'dynamic' keyword in the component declaration. Some examples and prototypes:
 
  ```html
  <div>
@@ -122,18 +122,10 @@ As mentioned above, sticker is also javascript friendly, so you can create your 
 </sticker>
  ```
 
- ```javascript
- import * as s from './sticker/js/index.js';
-s.define({
-  name: 'hello-world'
-})
-let component = s.append('hello-world');
-component.setAttribute('name', 'world');
- ```
  \
  or using plain js syntax:
  ```javascript
-import * as s from './sticker/js/index.js';
+import * as s from './spiderweb.js/api.js';
 s.define({
   name: 'hello-world'
   template: /*html*/`
@@ -292,6 +284,7 @@ s.define({
 ...
 component.refs.myList
 ```
+if the ref attribute is used inside a for loop the corrisponding refs[key] will contain an array to all the elements in the loop. Also, if you use the ref attribute on a tag inside an "if", then, even if it is not attached to the dom, it will be referred inside the corrisponding refs[key].
 
 ## BIND ATTRIBUTE
 if you have already worked on applications, either native apps or web apps, you know the importance of the two way data binding. this can be achieved, in sticker, with the bind property:
@@ -325,176 +318,3 @@ The bind property supports up to three different directives, that are:
  - @data: used to assign a property of the component to the value of the tag property. It's the only required property;
  - @prop: is the property of the tag that will be bound to the @data property. Default value is 'value';
  - @event: is the event that will trigger the reload of the @data value. Default event is change. It must be a valid event;
-
-## ROUTER
-```typescript
-import * as s from './sticker/index.js'
-/**
-* create a new instance of Router and configure the routes with map object as follow: 
-key of the object is the name of the route
-value of the object key is the component name of the route
-@example
-{
-  '/home': 'home-page'
-}
-// '/home' is the name of the route, 'home-page' is the component name created with sticker, used to create the page
- */
-constructor( map: Record<string,string>, node: HTMLElement = document.body )
-/**
-change the root where the pages are displayed
- */
-router.setRoot( node: HTMLElement )
-/**
-* change the displayed route and goes to the route named as the parameter
- */
-router.goto(route: string)
-/**
-* go to the last visited page before the current one
- */
-router.back()
-/**
-create new routes as the constructor does
- */
-router.map(map: Record<string,string>)
-```
-
-## ui
-
-```typescript
-/**
-* create a prompt like form with an input. the promise resolves when the x is pressed (the prompt is closed) or when the form is submitted
- */
-async s.ui.ask(text, placeholder = 'insert here', value = placeholder);
-/**
-* set an element as draggable
- */
-s.ui.draggable(element)
-/**
-* create title bar for your components. it is based on apple and windows ones. callback function will trigger when the x button is clicked
-*/ 
-s.ui.titleBar(callback, node = document.body, title = 'window')
-```
-
-## UTILS
-
-a set of utils methods that can be used for various purposes. In current state, the utils are methods for browser sniffing.
-
-```typescript
-import * as s from './sticker/index.js';
-enum browser {
-      FIREFOX = 'Firefox',
-      CHROME = 'Chrome',
-      IE = "Trident", 
-      MS_IE = "MSIE",
-      OPERA = "Opera", 
-      SAFARI = "Safari",
-      IPHONE_SAFARI = "iPhone",
-      IPAD_SAFARI = "iPad",
-      WEBKIT = 'AppleWebKit',
-      GECKO = 'Gecko',
-      MS_EDGE = 'Edge',
-      CHROMIUM_EDGE = 'Edg/',
-      NINTENDO = ' NintendoBrowser',
-};
-
-enum os {
-      NINTENDO = 'Nintendo',
-      PLAYSTATION = 'PlayStation',
-      XBOX = 'XBox',
-      ANDROID = 'Android',
-      IPHONE = 'iPhone',
-      IPAD = 'iPad',
-      WINDOWS_PHONE = 'Windows Phone',
-      MAC = 'Mac',
-      WINDOWS = 'Win',
-      UNIX = 'X11',
-      CHROMECAST = 'CrKey',
-      ROKU = 'Roku',
-      LINUX = 'Linux',
-      UNKNOWN = 'unknown',
-};
-//use as follow:
-s.utils.os.NINTENDO
-s.utils.browser.NINTENDO
-
-/**
- * return the actual os used
- */
-s.utils.detectOs(): os;
-/**
- * return the actual browser used
- */
-s.utils.detectBrowser(): browser;
-/**
-* return the browser version
- */
-s.utils.detectBrowserVersion(): number;
-/**
- * @see https://developer.mozilla.org/en-US/docs/Web/API/Navigator/userAgentData for more information about compatibility
- * @returns if device is mobile
- */
-s.utils.isMobile(): boolean;
-/**
-* @returns browser, browserVersion and os
- */
-s.utils.getUserAgentInfo();
-
-```
-
-## THREAD
-
-thread provides some utility methods for working with threads in javascript. The threads created with the s.Thread class are not visible to the end user (you will never get an instance of worker) but is handled internally.
-
-```typescript
-/**
-* create a new thread that will be handled by the s.Thread class
- */
-s.Thread.spawn(id: string, code: string | URL)
-
-/**
-* true if isn't the main thread
- */
-s.Thread.isChildThread()
-
-/**
-* listen for the specified message. the callback will get data sended with post or expose as parameter
- */
-s.Thread.listen( message: string, callback: Function, id?: string )
-
-/**
-* wait for message to be received.
-* the messages sended and received will be processed when the message is received.
-* available only for one message at time.
-*/
-s.Thread.wait(message: string, id?: string)
-
-/**
-* expose an object to the thread with the given id or to the main thread if the id is omitted. use listen method to capture the message from the thread
- */
-s.Thread.post( message: string, data: any, id?: string )
-
-/**
-* share with the specified thread the transferable
-*/
-s.Thread.expose( message: string, transferable: Record<string,Transferable>, id?: string )
-
-/**
-* log a message from child thread or main thread
- */
-s.Thread.log( message: any )
-
-/**
-* log an error from child thread or main thread
- */
-s.Thread.error( message: any )
-
-/**
-* kill the current thread or the child thread with the specified id 
-*/
-s.Thread.kill( id: string )
-
-/**
-* return promise resolved when the child thread end with the function kill
- */
-await s.Thread.join(id: string)
-```
