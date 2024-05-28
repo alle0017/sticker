@@ -1,12 +1,17 @@
 extern crate colored;
 extern crate git2;
 
+use std::{fs::File, io::Write};
+
 use colored::Colorize;
 
 const REPO_URL: &str = "https://github.com/alle0017/spiderweb.js";
 const CONFIG_FILE: &str = "/sticker-config.json";
 const LIB_DIR: &str = "/spiderweb.js";
-const JS_FILE: &str = "index.js"
+const HTML_FILE: &str = "/index.html";
+const HTML_BOILERPLATE: &str = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n\t\t<meta charset=\"UTF-8\">\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\t\t<title>Document</title>\n\t</head>\n\t<body>\n\t\t<script type=\"module\" src=\"index.js\"></script>\n\t</body>\n</html>";
+const JS_FILE: &str = "/index.js";
+const JS_CONTENT: &str = "import { define } from './spiderweb.js/api.js';";
 
 fn get_path() -> String {
     let current_dir = match std::env::current_dir() {
@@ -18,7 +23,30 @@ fn get_path() -> String {
     };
     current_dir
 }
+fn create_default_files( path: String ){
+    let mut js_path = path.clone();
+    let mut html_path = path.clone();
 
+    js_path.push_str(JS_FILE);
+    html_path.push_str(HTML_FILE);
+
+
+    _ =  match File::create( js_path ) {
+        Ok( mut file) => file.write_all(JS_CONTENT.as_bytes()),
+        Err(e) =>{
+            println!("{}", e.to_string().red());
+            return;
+        },
+    };
+
+    _ =  match File::create( html_path ) {
+        Ok( mut file) => file.write_all(HTML_BOILERPLATE.as_bytes()),
+        Err(e) =>{
+            println!("{}", e.to_string().red());
+            return;
+        },
+    };
+}
 
 async fn clone_repo( url: &str, path: String ){
     println!("{}", "cloning javascript repository...".blue());
@@ -70,6 +98,7 @@ pub async fn create_new_project() {
     clone_repo(REPO_URL, sticker_lib_path.clone()).await;
 
     sticker_lib_path.push_str(CONFIG_FILE);
+    create_default_files(path.clone());
 
     path.push_str(CONFIG_FILE);
 
