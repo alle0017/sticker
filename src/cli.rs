@@ -4,6 +4,7 @@ mod dom;
 mod config;
 mod new_project;
 mod data;
+mod server;
 
 use dom::Dom;
 use dom::CustomTagParser;
@@ -18,6 +19,7 @@ const BUILD_COMMAND: &str = "comp";
 const BUILD_FROM_CONFIG: &str = "build";
 const NEW_PROJECT_COMMAND: &str = "new";
 const UPDATE: &str = "update";
+const SERVE: &str = "serve";
 
 const VERSION: &'static str = "v 0.1.0";
 
@@ -103,6 +105,7 @@ fn print_command_list(){
       println!("{} {}", "sticker".bold(), BUILD_FROM_CONFIG.magenta());
       println!("{} {}", "sticker".bold(), NEW_PROJECT_COMMAND.magenta());
       println!("{} {}", "sticker".bold(), UPDATE.magenta());
+      println!("{} {}", "sticker".bold(), SERVE.magenta());
 }
 #[allow(unused_assignments)]
 pub async fn get_command(){
@@ -119,6 +122,8 @@ pub async fn get_command(){
             build_from_config();
       } else if args[1] == UPDATE.to_string() {
             new_project::update_project().await;
+      } else if args[1] == SERVE.to_string(){
+            server::serve().await;
       } else {
             print_command_list();
       }
