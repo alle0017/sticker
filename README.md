@@ -17,10 +17,6 @@ Sticker is simple, fast and lightweight library that can be used to access brows
 - [for attribute](#for-attribute)
 - [ref attribute](#ref-attribute)
 - [bind attribute](#bind-attribute)
-- [async components](#async-components)
-- [ui](#ui)
-- [utils](#utils)
-- [threads](#thread)
 
 ## BASIC USAGE 
 
@@ -147,11 +143,6 @@ s.define({
   `,
 })
 let component = s.append('hello-world');
-component.setAttribute('name', 'world');
- ```
- or, from the current version:
-
-```javascript
 component.name = 'world';
  ```
 
@@ -175,44 +166,10 @@ s.define( descriptor: {
     props: { 
       onenter?: ()=>void, 
       onleave?: ()=>void,
-      onupdate?: ()=>void,
-      oninstance?: ()=>void,
       [key: string]: any }, 
     }
-): (props: Record<string, any>, node: HTMLElement): HTMLCustomElement | undefined;
-/**
-* define custom component NOT defined with sticker template engine and return function that specifically creates the component created
-P.S.: name must contain '-' character
- */
-s.define(descriptor: { 
-  template: string, 
-  name: string, 
-  watch: string[] | undefined,
-  compileMarkdown: boolean, 
-  props: { 
-    onenter?: ()=>void, 
-    onleave?: ()=>void, 
-    onupdate?: ()=>void,
-    oninstance?: ()=>void,
-    [key: string]: any 
-  }, 
-}): (props: Record<string, any>, node: HTMLElement): HTMLCustomElement | undefined;
-/**
-* define custom component loading them from external files and return function that specifically creates the component created
-P.S.: name must contain '-' character
- */
-async s.defineExtern( descriptor: { 
-    name: string, 
-    link: string,
-    compileMarkdown: boolean,
-    watch: string[] | undefined, 
-    props: { 
-      onenter?: ()=>void, 
-      onleave?: ()=>void,
-      onupdate?: ()=>void,
-      oninstance?: ()=>void,
-      [key: string]: any }, 
-    }
+    template: string,
+    markdown: boolean,
 ): (props: Record<string, any>, node: HTMLElement): HTMLCustomElement | undefined;
 /**
 * return the content of the loaded file
@@ -226,12 +183,6 @@ s.load( filename ): Promise<string>
 
 export class HTMLCustomElement extends HTMLElement {
       /**
-       * 
-       * @param {string} name array name used in the html template
-       * @param {Array} value 
-       */
-      setArray(name, value){}
-      /**
       * fired when the element enters the DOM
        */
       onenter(){}
@@ -239,69 +190,6 @@ export class HTMLCustomElement extends HTMLElement {
       * fired when the element leaves the DOM
        */
       onleave(){}
-      /** 
-      * fired when the element's properties changes
-      */
-      onupdate(){}
-      /**
-      * fired when the element is created, before is parsed by sticker
-       */
-       oninstance(){}
-      /**
-      * @param {string} className
-      * @returns { HTMLCollection } live list of elements
-       */
-      getElementsByClassName(className){}
-      /**
-      * @param {string} id
-      * @returns { HTMLElement } live element
-       */
-      getElementById(id){}
-      /**
-      * @param {string} selector
-      * @returns { HTMLElement } live element
-       */
-      querySelector(selector){}
-      /**
-      * @param {string} selector
-      * @returns { HTMLCollection } live list of elements
-       */
-      querySelectorAll(selector){}
-      /**
-       * dispatch new event
-       * @param {string} eventName 
-       * @param {Object} args it can be accessed with event.details or, in {@link listen}, with the built-in $e const
-       */
-      emit(eventName, args){}
-      /**
-      * listen for specific events
-      * @param {string} eventName
-      * @param {Function} handler
-      * @returns {Function} a reference to the function used as handler. Must be used with {@link stopListen} or removeEventListener to stop listening for the specified event
-      */
-      listen(eventName, handler){}
-      /**
-       * stop listening for specific event
-       * @param {string} eventName 
-       * @param {Function} handler 
-       */
-      stopListen(eventName, handler){}
-      /**
-      * @param {string} selector
-      * @returns { HTMLElement } live element
-       */
-       
-      get(selector){}
-      /**
-      * @param {string} selector
-      * @returns { HTMLCollection } live list of elements
-       */
-      getAll(selector){}
-      /**
-      * add new property as watchable property
-      * @param {string} propName
-       */
-      setWatchable(propName) {}
 }
 ```
 ## CUSTOM EVENTS
@@ -404,7 +292,6 @@ s.define({
 ...
 component.refs.myList
 ```
-P.S.: this syntax doesn't support already the for loops.
 
 ## BIND ATTRIBUTE
 if you have already worked on applications, either native apps or web apps, you know the importance of the two way data binding. this can be achieved, in sticker, with the bind property:
@@ -438,30 +325,6 @@ The bind property supports up to three different directives, that are:
  - @data: used to assign a property of the component to the value of the tag property. It's the only required property;
  - @prop: is the property of the tag that will be bound to the @data property. Default value is 'value';
  - @event: is the event that will trigger the reload of the @data value. Default event is change. It must be a valid event;
-
-## ASYNC COMPONENTS
-When you fetch data from the web, you must consider that the fetch operation may fail. The fallback attribute was created for this purpose:
-```javascript
-define({
-      name: 'async-component',
-      template: /*html*/`
-            <div id="async" for="new of news">
-                <div>
-                  {{new}}
-                </div>
-            </div>
-            <div fallback="async">Ops!</div>
-      `,
-      props: {
-            async onenter(){
-                  this.news = await AnyAsyncMethod();
-            }
-      }
-      
-})
-```
-\ 
-If onenter method is recognized as async method and if there are any tags that have the fallback property, then the component will reactively display the component, based on the result of the promise. If the promise is rejected, the fallback tag will be displayed, otherwise will be ignored.
 
 ## ROUTER
 ```typescript
