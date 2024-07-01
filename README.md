@@ -232,7 +232,7 @@ Sticker implements also conditional rendering, based on the attributes if and el
 ```typescript
 s.define({
   template: /*html*/`
-      <div if="this.lang == 'en'" id="lang">
+      <div if="this.lang == 'en'" e-id="lang">
         Hello World!
       </div>
       <div else="lang">
@@ -242,7 +242,7 @@ s.define({
   watch: ['lang']
 })
 ```
-The if attribute accept a condition while the else attribute accept the id of the element that as the if condition. Multiple else are allowed.
+The if attribute accept a condition while the else attribute accept the e-id of the element that as the if condition. Multiple else are allowed.
 
 ## FOR ATTRIBUTE
 in the template, in s.define, you can also use for attribute to create templates based on arrays
