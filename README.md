@@ -174,14 +174,48 @@ s.load( filename ): Promise<string>
 ```typescript
 
 export class HTMLCustomElement extends HTMLElement {
+
+      //lifecycle hooks
+
+
       /**
-      * fired when the element enters the DOM
+      * event fired before the element is appended. Important Note: when this event is fired the first time, the references to all the properties, refs etc... are not settled yet.
+      */
+      onBeforeEnter()=> void;
+
+      /**
+      * event fired only the first time the element is appended. Important Note: this event is a particular case of the onenter event, but is called before it.
+      */
+       setup()=> void;
+
+      /**
+       * fired when the element enters the DOM
        */
       onenter(){}
+
+      /**
+      * event fired when child nodes are appended to the custom element.
+      */
+      onNodeAdded( event: { data: { nodeList: HTMLElement[] } })=> void
+
       /**
       * fired when the element leaves the DOM
-       */
+      */
       onleave(){}
+
+      //others
+
+      /*emit new event of type eventName. the event object will have the eventData object inside the data property*/
+      $emit( eventName: string, eventData: string)=>void
+
+      /*Collection of references to html elements that lives inside the component.The elements that are also child of loops will be referenced as an array of reference. The elements that are child of conditional tag will not be added to refs*/
+      refs: Object.<string, HTMLElement | HTMLElement[]>
+
+      /*Add a global shortcut*/
+       addShortcut( callback: function, ...keys: Array<string>)=> void;
+
+      /*Remove a global shortcut previously added*/
+       removeShortcut(...keys: Array<string>)=> void;
 }
 ```
 ## CUSTOM EVENTS
